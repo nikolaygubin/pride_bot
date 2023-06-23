@@ -8,12 +8,11 @@ from data_base import sqlite_db
 from keyboards import kb_client, inline_kb_quest, inline_kb_succses, inline_kb_go, inline_kb_buy, inline_kb_buy_only,\
                       inline_kb_menu, inline_kb_back_menu, kb_menuchange, inline_kb_menu_buy, inline_kb_quest_format, inline_kb_change_format,\
                       inline_kb_quest_social, inline_kb_expect, thx_next, accept_photo, kb_purpose, kb_gender, kb_username, kb_back_change
-from aiogram.types import ReplyKeyboardRemove
 from aiogram.types.message import ContentType
 from text import *
 from work_with_pairs import similarity
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-import os, asyncio
+import os
 import datetime
 import validators
 
@@ -46,8 +45,8 @@ class Client(StatesGroup):
     gender = State()
     email = State()
      
-    get_promocode = State()
     start_pay = State()
+    get_promocode = State()
     
 class Change(StatesGroup):  
     change_start = State()
@@ -525,7 +524,6 @@ async def succses(callback_query : types.CallbackQuery, state : FSMContext):
         await Menu.menu.set()
         return
     
-    await state.finish()
     await Client.start_pay.set()
     async with state.proxy() as data:
         data['Promo'] = 0
@@ -539,7 +537,6 @@ async def enter_promocode(callback_query : types.CallbackQuery, state : FSMConte
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
         await msg.edit_reply_markup(None)
-        # await msg.delete()
         msg = await bot.send_message(callback_query.from_user.id, 'Введите промокод:', reply_markup=inline_kb_quest)  
         data['Last_message']  = msg.to_python()
     await Client.get_promocode.set()
@@ -1046,7 +1043,6 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(enter_town, Text(equals='enter_town', ignore_case=True), state=Client.town)
     dp.register_callback_query_handler(again_town, Text(equals='again_town', ignore_case=True), state=Client.town)
     
-    # dp.register_callback_query_handler(get_social_network_but, Text(equals='skip', ignore_case=True), state=Client.social_network)
     dp.register_message_handler(get_social_network, state=Client.social_network)
     
     dp.register_message_handler(get_work, state=Client.work)
