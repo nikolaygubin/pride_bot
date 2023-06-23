@@ -3,7 +3,6 @@ from create_bot import dp, bot
 from handlers import client, admin
 from data_base import sqlite_db
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-# from apscheduler.jobstores.redis import RedisJobStore
 from work_with_pairs import *
 import logging
 import os
@@ -37,7 +36,6 @@ async def on_shutdown(dp):
     await bot.delete_webhook()
 
 if __name__ == "__main__" :
-    # executor.start_polling(dp, on_startup=start_bot(), skip_updates=False)
     executor.start_webhook(
         dispatcher = dp,
         webhook_path = '',

@@ -21,13 +21,6 @@ def start_sql():
         password=password,
         database=database
     )
-    # base = ps.connect(
-    #     port='5433',
-    #     host='127.0.0.5',
-    #     user='postgres',
-    #     password='nikokoni228',
-    #     database='bot_db'
-    # )
     cursor = base.cursor()
     if base:
         print('Data base connected') 

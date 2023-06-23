@@ -1,21 +1,8 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 
 inl_button1 = InlineKeyboardButton(text='Назад', callback_data='back_mes')
 inl_button2 = InlineKeyboardButton(text='Верно ✅', callback_data='right')
-# inl_button3 = InlineKeyboardButton(text='Отредактировать ❌', callback_data='change')
 inl_button3 = InlineKeyboardButton(text='Заполнить заново', callback_data='fill_again')
-
-inl_change_button1 = InlineKeyboardButton(text='Имя', callback_data='change_name')
-inl_change_button2 = InlineKeyboardButton(text='Город', callback_data='change_town')
-inl_change_button3 = InlineKeyboardButton(text='Социальные сети', callback_data='change_social_network')
-inl_change_button4 = InlineKeyboardButton(text='Занятия/работа', callback_data='change_work')
-inl_change_button5 = InlineKeyboardButton(text='Хобби/увлечения', callback_data='change_hobby')
-inl_change_button6 = InlineKeyboardButton(text='Ожидания', callback_data='change_expect')
-inl_change_button7 = InlineKeyboardButton(text='Формат встреч', callback_data='change_format')
-inl_change_button8 = InlineKeyboardButton(text='Выход', callback_data='change_exit')
-
-kb_change = InlineKeyboardMarkup(resize_keyboard=True).add(inl_change_button1).add(inl_change_button2).add(inl_change_button3)\
-                                                    .add(inl_change_button4).add(inl_change_button5).add(inl_change_button6).add(inl_change_button7).add(inl_change_button8)
                                                     
 inl_menuchange_button1 = InlineKeyboardButton(text='Имя', callback_data='change_name')
 inl_menuchange_button2 = InlineKeyboardButton(text='Фото', callback_data='change_photo')
@@ -39,7 +26,6 @@ kb_client = ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton('Зап
 
 inline_kb_quest = InlineKeyboardMarkup(resize_keyboard=True).row(inl_button1)
 inline_kb_quest_social = InlineKeyboardMarkup(resize_keyboard=True).row(inl_button1)
-# .row(InlineKeyboardButton(text='Пропуск', callback_data='skip'))
 inline_kb_quest_format = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Вживую', callback_data='offline'),\
 InlineKeyboardButton(text='Онлайн', callback_data='online')).row(inl_button1)
 

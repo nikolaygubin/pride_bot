@@ -5,7 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 from data_base import sqlite_db
-from keyboards import kb_client, inline_kb_quest, kb_change, inline_kb_succses, inline_kb_go, inline_kb_buy, inline_kb_buy_only,\
+from keyboards import kb_client, inline_kb_quest, inline_kb_succses, inline_kb_go, inline_kb_buy, inline_kb_buy_only,\
                       inline_kb_menu, inline_kb_back_menu, kb_menuchange, inline_kb_menu_buy, inline_kb_quest_format, inline_kb_change_format,\
                       inline_kb_quest_social, inline_kb_expect, thx_next, accept_photo, kb_purpose, kb_gender, kb_username, kb_back_change
 from aiogram.types import ReplyKeyboardRemove
@@ -48,18 +48,10 @@ class Client(StatesGroup):
      
     get_promocode = State()
     start_pay = State()
-
-    # редактирование анкеты   
-    change_start = State()
-    change_state = State()
     
 class Change(StatesGroup):  
     change_start = State()
     change_state = State()
-    
-class Buy(StatesGroup):
-    get_promocode = State()
-    start_pay = State()
     
 class Menu(StatesGroup):
     menu = State()
@@ -519,155 +511,6 @@ async def fill_again(callback_query : types.CallbackQuery, state : FSMContext):
         data['Last_message'] = msg.to_python()
     await Client.name.set()
             
-    
-# async def change(callback_query : types.CallbackQuery, state : FSMContext):
-#     await callback_query.answer()
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.edit_reply_markup(None)
-#         await msg.delete()
-#         msg = await bot.send_message(callback_query.from_user.id, ASK_CHANGE, reply_markup=kb_change)
-#         data['Last_message']  = msg.to_python()
-#     await Client.change_start.set()
-
-# async def change_name(callback_query : types.CallbackQuery, state : FSMContext):
-#     await callback_query.answer()
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.edit_reply_markup(None)
-#         await msg.delete()
-#         msg = await bot.send_message(callback_query.from_user.id, GET_NAME)
-#         data['Last_message']  = msg.to_python()
-#         data['Change_object'] = 'Имя'
-#     await Client.change_state.set()
-
-# async def change_town(callback_query : types.CallbackQuery, state : FSMContext):
-#     await callback_query.answer()
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.edit_reply_markup(None)
-#         await msg.delete()
-#         msg = await bot.send_message(callback_query.from_user.id, GET_TOWN)
-#         data['Last_message']  = msg.to_python()
-#         data['Change_object'] = 'Город'
-#     await Client.change_state.set()
-
-# async def change_social_network(callback_query : types.CallbackQuery, state : FSMContext):
-#     await callback_query.answer()
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.edit_reply_markup(None)
-#         await msg.delete()
-#         msg = await bot.send_message(callback_query.from_user.id, GET_SOCIAL)
-#         data['Last_message']  = msg.to_python()
-#         data['Change_object'] = 'Социальные сети'
-#     await Client.change_state.set()
-
-# async def change_work(callback_query : types.CallbackQuery, state : FSMContext):
-#     await callback_query.answer()
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.edit_reply_markup(None)
-#         await msg.delete()
-#         msg = await bot.send_message(callback_query.from_user.id, GET_WORK)
-#         data['Last_message']  = msg.to_python()
-#         data['Change_object'] = 'Работа'
-#     await Client.change_state.set()
-
-# async def change_hobby(callback_query : types.CallbackQuery, state : FSMContext):
-#     await callback_query.answer()
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.edit_reply_markup(None)
-#         await msg.delete()
-#         msg = await bot.send_message(callback_query.from_user.id, GET_HOBBY)
-#         data['Last_message']  = msg.to_python()
-#         data['Change_object'] = 'Зацепки'
-#     await Client.change_state.set()
-
-# async def change_expect(callback_query : types.CallbackQuery, state : FSMContext):
-#     await callback_query.answer()
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.edit_reply_markup(None)
-#         await msg.delete()
-#         msg = await bot.send_message(callback_query.from_user.id, GET_EXPECT)
-#         data['Last_message']  = msg.to_python()
-#         data['Change_object'] = 'Ожидания'
-#     await Client.change_state.set()
-    
-# async def change_format(callback_query : types.CallbackQuery, state : FSMContext):
-#     await callback_query.answer()
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.edit_reply_markup(None)
-#         await msg.delete()
-#         msg = await bot.send_message(callback_query.from_user.id, GET_FORMAT, reply_markup=inline_kb_change_format)
-#         data['Last_message']  = msg.to_python()
-#         data['Change_object'] = 'Формат' 
-#     await Client.change_state.set()
-
-# async def change_exit(callback_query : types.CallbackQuery, state : FSMContext):
-#     await callback_query.answer()   
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.edit_reply_markup(None)
-#         await msg.delete()
-#     await sqlite_db.insert_sql(state)
-#     values = list(await sqlite_db.get_profile(callback_query.from_user.id))
-#     age = datetime.datetime.now().year - int(values[10].split('.')[2])
-#     format = str()
-#     if values[9]:
-#         format = 'Онлайн'
-#     else :
-#         format = 'Оффлайн'
-#     card = f'{values[2]} из города {values[4]}\nВозраст: {age}\n\nTelegram: {values[1]}\nСоциальная сеть: {values[5]}\n\nЧем занимается: \
-# {values[6]}\n\nЗацепки для начала разговора: {values[7]}\n\nЦель использования PRIDE CONNECT: {values[11]}\n\nФормат встречи: {format}\nОт встречи ожидает: {values[8]}'    
-#     async with state.proxy() as data:
-#         msg = await bot.send_message(callback_query.from_user.id, TEXT_PROFILE + card, reply_markup=inline_kb_succses)
-#         data['Last_message']  = msg.to_python()
-
-# async def set_change(message : types.Message, state : FSMContext):
-#     async with state.proxy() as data:
-#         text = message.text
-#         data[data['Change_object']] = message.text
-#         change_object = data['Change_object']
-#         msg = await message.answer(SUCCSES_CHANGE, reply_markup=kb_change) 
-#         data['Last_message']  = msg.to_python()      
-    
-#     await message.delete()
-#     await Client.change_start.set()
-       
-# async def set_change_online(callback_query : types.CallbackQuery, state : FSMContext):
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.delete()
-#         data[data['Change_object']] = True
-#         msg = await bot.send_message(callback_query.from_user.id, SUCCSES_CHANGE, reply_markup=kb_change)   
-#         data['Last_message']  = msg.to_python()      
-    
-#     await Client.change_start.set()
-    
-# async def set_change_offline(callback_query : types.CallbackQuery, state : FSMContext):
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.delete()
-#         data[data['Change_object']] = False
-#         msg = await bot.send_message(callback_query.from_user.id, SUCCSES_CHANGE, reply_markup=kb_change)   
-#         data['Last_message']  = msg.to_python()               
-    
-#     await Client.change_start.set()
-       
-# async def set_change_expect(callback_query : types.CallbackQuery, state : FSMContext):
-#     async with state.proxy() as data:
-#         msg = types.Message.to_object(data['Last_message'])
-#         await msg.delete()
-#         data[data['Change_object']] = callback_query.data
-#         msg = await bot.send_message(callback_query.from_user.id, SUCCSES_CHANGE, reply_markup=kb_change)   
-#         data['Last_message']  = msg.to_python()               
-    
-#     await Client.change_start.set()
-    
 async def succses(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()    
     async with state.proxy() as data:
@@ -1090,7 +933,6 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
             msg = await bot.send_message(message.from_user.id, 'Оплата подписки', reply_markup=inline_kb_menu_buy)
             data['Main_message'] = msg.to_python()
             await Menu_buy.next()
-            # await data['Main_message'].edit_reply_markup(inline_kb_menu_buy)
             return
         await message.delete()
         if data['Promo'] == 100:
@@ -1114,8 +956,6 @@ async def menu_buy(callback_query : types.CallbackQuery, state : FSMContext):
         msg = types.Message.to_object(data['Main_message'])
         await msg.edit_reply_markup(None)
         promo_amount = data['Promo']
-    # if PAYMENT_TOKEN.split(':')[1] == 'TEST':
-    #     await bot.send_message(callback_query.from_user.id, 'Тестовая оплата!')
     price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE.amount * (1 - int(promo_amount) / 100)))
     await bot.send_invoice(callback_query.from_user.id,
                            title='Подписка на месяц',
@@ -1177,8 +1017,6 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
         await msg.delete()
-        # msg = await bot.send_message(callback_query.from_user.id, 'Главное меню', reply_markup=inline_kb_menu)
-        # data['Main_message'] = msg.to_python()
     await Menu.menu.set()
                                         
 def register_handlers_client(dp : Dispatcher):
@@ -1239,29 +1077,9 @@ def register_handlers_client(dp : Dispatcher):
 
     dp.register_callback_query_handler(succses, Text(equals='succses', ignore_case=True), state='*')
     dp.register_callback_query_handler(fill_again, Text(equals='fill_again', ignore_case=True), state='*')
-    # dp.register_callback_query_handler(change, Text(equals='change', ignore_case=True), state='*')
-    
-    # dp.register_callback_query_handler(change_name, Text(equals='change_name', ignore_case=True), state=Client.change_start)
-    # dp.register_callback_query_handler(change_town, Text(equals='change_town', ignore_case=True), state=Client.change_start)
-    # dp.register_callback_query_handler(change_social_network, Text(equals='change_social_network', ignore_case=True), state=Client.change_start)
-    # dp.register_callback_query_handler(change_work, Text(equals='change_work', ignore_case=True), state=Client.change_start)
-    # dp.register_callback_query_handler(change_hobby, Text(equals='change_hobby', ignore_case=True), state=Client.change_start)
-    # dp.register_callback_query_handler(change_expect, Text(equals='change_expect', ignore_case=True), state=Client.change_start)
-    # dp.register_callback_query_handler(change_format, Text(equals='change_format', ignore_case=True), state=Client.change_start)
-    # dp.register_callback_query_handler(change_exit, Text(equals='change_exit', ignore_case=True), state='*')
-    
-    # dp.register_message_handler(set_change, state=Client.change_state)
-    # dp.register_callback_query_handler(set_change_online, Text(equals='online', ignore_case=True), state=Client.change_state)
-    # dp.register_callback_query_handler(set_change_offline, Text(equals='offline', ignore_case=True), state=Client.change_state)
 
-    # dp.register_callback_query_handler(set_change_expect, Text(equals='100% польза', ignore_case=True), state=Client.change_state)
-    # dp.register_callback_query_handler(set_change_expect, Text(equals='70% польза - 30% фан', ignore_case=True), state=Client.change_state)
-    # dp.register_callback_query_handler(set_change_expect, Text(equals='50% польза - 50% фан', ignore_case=True), state=Client.change_state)
-    # dp.register_callback_query_handler(set_change_expect, Text(equals='30% польза - 70% фан', ignore_case=True), state=Client.change_state)
-    # dp.register_callback_query_handler(set_change_expect, Text(equals='100% фан', ignore_case=True), state=Client.change_state)
-    
     # payment
-    dp.register_message_handler(check_promo, state='*')
+    dp.register_message_handler(check_promo, state=Client.get_promocode)
     dp.register_callback_query_handler(enter_promocode, Text(equals='promocode', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy, Text(equals='buy', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_later, Text(equals='buy_later', ignore_case=True), state='*')
