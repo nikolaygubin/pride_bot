@@ -19,7 +19,6 @@ async def on_startup(dp):
 
     scheduler.add_job(make_pairs, 'cron', day_of_week='1', hour='8', minute='0', timezone='Europe/Moscow')
     scheduler.add_job(make_extra_pairs, 'cron', day_of_week='1', hour='8', minute='30', timezone='Europe/Moscow')
-    scheduler.add_job(make_extra_pairs, 'cron', day_of_week='0', minute='*', timezone='Europe/Moscow')
     scheduler.add_job(ask_impress, 'cron', day_of_week='1', hour='9', minute='0', timezone='Europe/Moscow')
 
     # scheduler.add_job(make_pairs, 'cron', day_of_week='6', hour='12', minute='0', timezone='Europe/Moscow')
