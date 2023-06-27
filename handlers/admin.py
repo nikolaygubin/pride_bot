@@ -7,6 +7,7 @@ from aiogram.dispatcher.filters import Text
 from keyboards import kb_client
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from work_with_pairs import *
+from aiogram.dispatcher.webhook import SendMessage
 
 ID = [555581588, 261295913, 5446068361, 2137624598]
                 
@@ -185,10 +186,11 @@ async def send_message(callback_query : types.callback_query, state : FSMContext
 async def get_message(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         await message.delete()
-        msg = types.Message.to_object(data['Admin_message'])
-        count = await sqlite_db.send_message(message)
-        await msg.edit_text(f'Ваше сообщение успешно доставлено {count} пользователям', reply_markup=inline_kb_actions)   
+        # msg = types.Message.to_object(data['Admin_message'])
+        # count = await sqlite_db.send_message(message)
+        # await msg.edit_text(f'Ваше сообщение успешно доставлено {count} пользователям', reply_markup=inline_kb_actions)   
     await Admin.actions.set() 
+    return SendMessage(555581588, message.text)
 
 async def back_act(callback_query : types.callback_query, state : FSMContext):
     await callback_query.answer()
