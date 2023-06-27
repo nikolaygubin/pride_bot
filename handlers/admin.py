@@ -174,8 +174,7 @@ async def ask_impress_admin(callback_query : types.callback_query, state : FSMCo
         msg = types.Message.to_object(data['Admin_message'])
         count = await ask_impress()
         await msg.edit_text(f'Опрос о впечатлениях удалось отправить {count} пользователям!', reply_markup=inline_kb_actions)
-      
-@dp.async_task()  
+        
 async def send_message(callback_query : types.callback_query, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
@@ -275,7 +274,7 @@ def register_handlers_admin(dp : Dispatcher):
     
     dp.register_callback_query_handler(actions_menu, Text(equals='actives', ignore_case=True), state=Admin.start) # actions_menu
     dp.register_callback_query_handler(back_act, Text(equals='back_act', ignore_case=True), state=Admin.action_point)
-    # dp.register_callback_query_handler(send_message, Text(equals='send_message', ignore_case=True), state='*')
+    dp.register_callback_query_handler(send_message, Text(equals='send_message', ignore_case=True), state='*')
     dp.register_callback_query_handler(ask_active, Text(equals='ask_active', ignore_case=True), state='*')
     dp.register_callback_query_handler(make_pairs_admin, Text(equals='make_pairs', ignore_case=True), state='*')
     dp.register_callback_query_handler(make_extra_pairs_admin, Text(equals='make_extra_pairs', ignore_case=True), state='*')
