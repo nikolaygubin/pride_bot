@@ -141,7 +141,7 @@ async def actions_menu(callback_query : types.callback_query, state : FSMContext
         await msg.edit_text('Действия', reply_markup=inline_kb_actions)
     await Admin.actions.set()
     
-async def make_pairs_admin(callback_query : types.callback_query, state : FSMContext):
+async def make_pairs_admin(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
