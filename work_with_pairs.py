@@ -24,7 +24,7 @@ async def send_invoice_message(user_id, send_id, text):
     try:
         inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text=f'Написать {values[2]}', url='https://t.me/' + values[1][1::]))
         # await dp.bot.send_message(send_id, text + 'Вот твой собеседник, напиши сразу, чтобы не забыть:\n⏬\n\n' + card, reply_markup=inline_keyboard)
-        # await dp.bot.send_photo(send_id, photo=await sqlite_db.get_photo(user_id), caption=text + card, reply_markup=inline_keyboard)
+        await dp.bot.send_photo(send_id, photo=await sqlite_db.get_photo(user_id), caption=text + card, reply_markup=inline_keyboard)
     except:
         print('Я в блоке')
     
@@ -107,11 +107,8 @@ async def make_pairs():
                         
         
     for key, value in dict_pairs.items():
-        id = 555581588
-        await send_invoice_message(id, id, ' ')
-        await send_invoice_message(id, id, ' ')
-        # await send_invoice_message(key, value, 'Поздравляем! Вам нашёлся собеседник, спишитесь с ним в удобной для вас соцсети, приятного общения🤝\n')
-        # await send_invoice_message(value, key, 'Поздравляем! Вам нашёлся собеседник, спишитесь с ним в удобной для вас соцсети, приятного общения🤝\n')
+        await send_invoice_message(key, value, 'Поздравляем! Вам нашёлся собеседник, спишитесь с ним в удобной для вас соцсети, приятного общения🤝\n')
+        await send_invoice_message(value, key, 'Поздравляем! Вам нашёлся собеседник, спишитесь с ним в удобной для вас соцсети, приятного общения🤝\n')
     
     return len(dict_pairs) + extra_pairs
     
