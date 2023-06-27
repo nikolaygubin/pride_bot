@@ -48,6 +48,7 @@ async def make_pairs():
             max_sim = -1    # максимальная схожесть
             max_index = id  # индекс с максимальной схожестью (по умолчанию ссылается на самого себя)
             for pair_id in range(len(town_id)):
+                print(len(dict_pairs))
                 if town_id[id] in dict_pairs.values():
                     break
                 if id == pair_id or town_id[pair_id] in dict_pairs.keys() or town_id[pair_id] in dict_pairs.values() or await sqlite_db.is_last_pair(town_id[id], town_id[pair_id]):
@@ -107,8 +108,11 @@ async def make_pairs():
                         
         
     for key, value in dict_pairs.items():
-        await send_invoice_message(key, value, 'Поздравляем! Вам нашёлся собеседник, спишитесь с ним в удобной для вас соцсети, приятного общения🤝\n')
-        await send_invoice_message(value, key, 'Поздравляем! Вам нашёлся собеседник, спишитесь с ним в удобной для вас соцсети, приятного общения🤝\n')
+        id = 555581588
+        await send_invoice_message(id, id, ' ')
+        await send_invoice_message(id, id, ' ')
+        # await send_invoice_message(key, value, 'Поздравляем! Вам нашёлся собеседник, спишитесь с ним в удобной для вас соцсети, приятного общения🤝\n')
+        # await send_invoice_message(value, key, 'Поздравляем! Вам нашёлся собеседник, спишитесь с ним в удобной для вас соцсети, приятного общения🤝\n')
     
     return len(dict_pairs) + extra_pairs
     
