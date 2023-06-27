@@ -181,7 +181,6 @@ async def send_message(message : types.Message):
     for id in users_id:
         num += 1
         try:
-            # msg = SendMessage(id[0], message.text)
             await bot.send_message(id[0], message.text)
             counter += 1
         except:
