@@ -5,6 +5,7 @@ from aiogram.dispatcher import FSMContext
 import psycopg2 as ps
 import datetime, calendar, os
 from urllib.parse import urlparse
+from aiogram.dispatcher.webhook import SendMessage
 
 def start_sql():
     global base, cursor
@@ -176,12 +177,15 @@ async def send_message(message : types.Message):
     cursor.execute('SELECT id FROM users')
     users_id = cursor.fetchall()
     counter = 0
+    num = 0
     for id in users_id:
+        num += 1
         try:
+            # return SendMessage(id[0], message.text)
             await bot.send_message(id[0], message.text)
             counter += 1
         except:
-            print('Я в блоке')
+            print(f'Я в блоке {num}')
     return counter
 async def load_info(id, state : FSMContext):
     cursor.execute('SELECT * FROM users WHERE id = %s', (id, ))
