@@ -1012,7 +1012,7 @@ async def at_start(callback_query: types.CallbackQuery, state : FSMContext):
 async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
-        msg = types.Message.to_object(data['Restart_message'])
+        msg = types.Message.to_object(data['Last_message'])
         await msg.delete()
                                         
 def register_handlers_client(dp : Dispatcher):
