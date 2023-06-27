@@ -24,7 +24,7 @@ async def send_invoice_message(user_id, send_id, text):
     try:
         inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text=f'Написать {values[2]}', url='https://t.me/' + values[1][1::]))
         # await dp.bot.send_message(send_id, text + 'Вот твой собеседник, напиши сразу, чтобы не забыть:\n⏬\n\n' + card, reply_markup=inline_keyboard)
-        await dp.bot.send_photo(send_id, photo=await sqlite_db.get_photo(user_id), caption=text + card, reply_markup=inline_keyboard)
+        # await dp.bot.send_photo(send_id, photo=await sqlite_db.get_photo(user_id), caption=text + card, reply_markup=inline_keyboard)
     except:
         print('Я в блоке')
     
@@ -48,7 +48,6 @@ async def make_pairs():
             max_sim = -1    # максимальная схожесть
             max_index = id  # индекс с максимальной схожестью (по умолчанию ссылается на самого себя)
             for pair_id in range(len(town_id)):
-                print(len(dict_pairs))
                 if town_id[id] in dict_pairs.values():
                     break
                 if id == pair_id or town_id[pair_id] in dict_pairs.keys() or town_id[pair_id] in dict_pairs.values() or await sqlite_db.is_last_pair(town_id[id], town_id[pair_id]):
