@@ -7,7 +7,6 @@ from aiogram.dispatcher.filters import Text
 from keyboards import kb_client
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from work_with_pairs import *
-from aiogram.dispatcher.webhook import asy
 
 ID = [555581588, 261295913, 5446068361, 2137624598]
                 
