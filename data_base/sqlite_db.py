@@ -40,6 +40,9 @@ def start_sql():
     cursor.execute('CREATE TABLE IF NOT EXISTS demo_users(user_id BIGINT)')
     base.commit()
 
+async def close_db():
+    base.close()
+    
 async def check_promo(message : types.Message):
     cursor.execute('SELECT * FROM promo WHERE code = %s', (message.text, ))
     promo = cursor.fetchone()
@@ -488,3 +491,16 @@ async def count_demo_subs():
 async def get_photo(id):
     cursor.execute('SELECT photo FROM users WHERE id = %s', (id, ))
     return cursor.fetchone()[0]
+
+async def check_block():
+    cursor.execute('SELECT id FROM users WHERE is_sub_active = true')
+    users = cursor.fetchall()
+    
+    for user in users:
+        try:
+            await bot.send_chat_action(user[0], types.ChatActions.TYPING)
+            # await bot.send_chat_action(user[0], None)      
+        except:
+            await bot.send_message(555581588, f'юзер {id[0]} в блоке')
+            cursor.execute('UPDATE users SET active = false WHERE id = %s', (user[0]))
+            base.commit()
