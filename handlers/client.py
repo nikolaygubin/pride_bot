@@ -515,7 +515,11 @@ async def succses(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()    
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_reply_markup(None)
+        try:
+            await msg.delete_reply_markup()
+        except:
+            pass
+            
     
     user = await sqlite_db.check_paid(callback_query.from_user.id)
     if user[0]:
