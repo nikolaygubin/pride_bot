@@ -502,7 +502,7 @@ async def check_block():
             await bot.send_chat_action(user[0], types.ChatActions.TYPING)
             # await bot.send_chat_action(user[0], None)      
         except:
-            text += f'юзер {user[0]} в блоке'
+            text += f'{user[0]}'
             cursor.execute('UPDATE users SET active = false WHERE id = %s', (user[0], ))
             base.commit()
             
