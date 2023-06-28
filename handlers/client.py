@@ -1016,6 +1016,7 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
         msg = types.Message.to_object(data['Last_message'])
         await msg.delete()
         
+@dp.errors_handler(exception=BotBlocked)
 async def bot_blocked(update : types.Update, exception : BotBlocked):
     await bot.send_message(555581588, f'Гандон с ником {update.message.from_user.username} тебя заблокал')
                                         
@@ -1153,4 +1154,4 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(active, Text(equals='active_user', ignore_case=True), state='*')
     dp.register_callback_query_handler(skip, Text(equals='skip_week', ignore_case=True), state='*')
     
-    dp.register_errors_handler(bot_blocked, exception=BotBlocked)
+    # dp.register_errors_handler(bot_blocked, exception=BotBlocked)
