@@ -1017,7 +1017,7 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
         await msg.delete()
         
 async def bot_blocked(update : types.Update, exception : BotBlocked):
-    print(f'меня заблокал гандон с id {update.message.from_user.id}\nЕго зовут {update.message.from_user.username}')
+    await bot.send_message(555581588, f'Гандон с ником {update.message.from_user.username} тебя заблокал')
                                         
 def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(next_step, Text(equals='next', ignore_case=True), state='*')
