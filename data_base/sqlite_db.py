@@ -496,14 +496,10 @@ async def check_block():
     cursor.execute('SELECT id FROM users WHERE is_sub_active = true')
     users = cursor.fetchall()
     
-    text = ''
     for user in users:
         try:
             await bot.send_chat_action(user[0], types.ChatActions.TYPING)
             # await bot.send_chat_action(user[0], None)      
         except:
-            text += f'{user[0]}'
             cursor.execute('UPDATE users SET active = false WHERE id = %s', (user[0], ))
             base.commit()
-            
-    await bot.send_message(555581588, text)
