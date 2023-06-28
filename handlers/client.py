@@ -533,8 +533,7 @@ async def succses(callback_query : types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         data['Promo'] = 0
         photo = open('./content/photo/pam.png', 'rb')
-        await bot.send_file(callback_query.from_user.id, photo)
-        # await bot.send_photo(callback_query.from_user.id, photo)
+        await bot.send_photo(callback_query.from_user.id, photo)
         msg = await bot.send_message(callback_query.from_user.id, ABOUT_SUB, reply_markup=inline_kb_buy)
         data['Last_message']  = msg.to_python()       
        
