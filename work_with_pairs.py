@@ -24,7 +24,7 @@ async def send_invoice_message(user_id, send_id, text):
     try:
         inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text=f'Написать {values[2]}', url='https://t.me/' + values[1][1::]))
         # await dp.bot.send_message(send_id, text + 'Вот твой собеседник, напиши сразу, чтобы не забыть:\n⏬\n\n' + card, reply_markup=inline_keyboard)
-        await dp.bot.send_photo(send_id, photo=await sqlite_db.get_photo(user_id), caption=text + card, reply_markup=inline_keyboard)
+        # await dp.bot.send_photo(send_id, photo=await sqlite_db.get_photo(user_id), caption=text + card, reply_markup=inline_keyboard)
     except:
         print('Я в блоке')
     
