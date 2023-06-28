@@ -12,6 +12,7 @@ from aiogram.types.message import ContentType
 from text import *
 from work_with_pairs import similarity
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.exceptions import BotBlocked
 import os
 import datetime
 import validators
@@ -1014,6 +1015,9 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
         await msg.delete()
+        
+async def bot_blocked(update : types.Update, exception : BotBlocked):
+    print(f'меня заблокал гандон с id {update.message.from_user.id}\nЕго зовут {update.message.from_user.username}')
                                         
 def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(next_step, Text(equals='next', ignore_case=True), state='*')
@@ -1148,3 +1152,5 @@ def register_handlers_client(dp : Dispatcher):
     #ask_active
     dp.register_callback_query_handler(active, Text(equals='active_user', ignore_case=True), state='*')
     dp.register_callback_query_handler(skip, Text(equals='skip_week', ignore_case=True), state='*')
+    
+    dp.register_errors_handler(bot_blocked, exception=BotBlocked)
