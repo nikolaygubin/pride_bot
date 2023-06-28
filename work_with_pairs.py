@@ -94,7 +94,7 @@ async def make_pairs():
             dict_pairs[online_id[id]] = online_id[max_index]
             await sqlite_db.append_pair(online_id[id], online_id[max_index])
         
-    extra_pairs = int()
+    extra_pairs = 0
     if len(dict_pairs) * 2 != len(offline_users) + len(online_users):
         users_without_pair = await sqlite_db.find_users_without_pair()
         if users_without_pair == None:
@@ -103,7 +103,7 @@ async def make_pairs():
             for id in users_without_pair:
                 await sqlite_db.try_make_pair(id)
                 try:
-                    await dp.bot.send_message(id, 'К сожалению на этой неделе вам не удалось подобрать пару сразу😔\nМы занесём вас в дополнительный список, и каждый день будем пытаться подобрать пару снова!')
+                    await dp.bot.send_message(id, 'К сожалению на этой неделе вам не удалось подобрать пару сразу\nМы занесём вас в дополнительный список, и каждый день будем пытаться подобрать пару снова!')
                 except:
                     print('Я в блоке')
             extra_pairs = await make_extra_pairs()
