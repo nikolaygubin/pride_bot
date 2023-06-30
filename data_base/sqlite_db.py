@@ -345,11 +345,9 @@ async def get_history(id, state : FSMContext):
     async with state.proxy() as data:
         start_index : int = 3 * data['Page_num']
         if start_index > len(all_pairs):
-            start_index -= 3
             data['Page_num'] -= 1
             return None
         if start_index < 0:
-            start_index = 0
             data['Page_num'] += 1
             return None            
 
