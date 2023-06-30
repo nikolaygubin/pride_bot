@@ -1010,7 +1010,10 @@ async def at_start(callback_query: types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
         await msg.delete_reply_markup()
-        msg = await bot.send_message(callback_query.from_user.id, GET_NAME)
+        # msg = await bot.send_message(callback_query.from_user.id, GET_NAME)
+        # data['Last_message'] = msg.to_python()
+        video = open('./content/videos/vid1.mp4', 'rb')
+        msg = await bot.send_video(callback_query.from_user.id, video, reply_markup=thx_next)
         data['Last_message'] = msg.to_python()
     await Client.name.set()
     
