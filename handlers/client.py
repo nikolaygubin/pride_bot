@@ -1019,7 +1019,11 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
         await msg.delete()
-                                        
+
+async def unknown(message : types.Message):
+    await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\
+Введите команду /help если у вас возникли проблемы с ботом')
+
 def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(next_step, Text(equals='next', ignore_case=True), state='*')
     dp.register_callback_query_handler(back, Text(equals='back_mes', ignore_case=True), state=Client.all_states)
@@ -1153,3 +1157,5 @@ def register_handlers_client(dp : Dispatcher):
     #ask_active
     dp.register_callback_query_handler(active, Text(equals='active_user', ignore_case=True), state='*')
     dp.register_callback_query_handler(skip, Text(equals='skip_week', ignore_case=True), state='*')
+
+    dp.register_message_handler(unknown, state='*')

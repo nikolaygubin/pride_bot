@@ -145,6 +145,7 @@ async def make_pairs_admin(callback_query : types.CallbackQuery, state : FSMCont
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
+        await msg.edit_text('Подбираем пары...')
         count = await make_pairs()
         await msg.edit_text(f'Успешно получилось подобрать {count} пар!', reply_markup=inline_kb_actions)
         
@@ -152,6 +153,7 @@ async def make_extra_pairs_admin(callback_query : types.callback_query, state : 
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
+        await msg.edit_text('Подбираем пары...')
         count = await make_extra_pairs()
         await msg.edit_text(f'Успешно получилось подобрать {count} пар!', reply_markup=inline_kb_actions)
         
@@ -159,6 +161,7 @@ async def see_paid(callback_query : types.callback_query, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
+        await msg.edit_text('Проверяем подписку...')
         count = await sqlite_db.update()
         await msg.edit_text(f'Найдено и обнулено {count} просроченных подписок!', reply_markup=inline_kb_actions)
         
@@ -166,6 +169,7 @@ async def ask_active(callback_query : types.callback_query, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
+        await msg.edit_text('Опрашиваем на активность...')
         count = await is_active()
         await msg.edit_text(f'Удалось опросить {count} пользователей!', reply_markup=inline_kb_actions)
         
@@ -173,6 +177,7 @@ async def ask_impress_admin(callback_query : types.callback_query, state : FSMCo
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
+        await msg.edit_text('Оправшиваем о впечатлениях...')
         count = await ask_impress()
         await msg.edit_text(f'Опрос о впечатлениях удалось отправить {count} пользователям!', reply_markup=inline_kb_actions)
         
@@ -187,6 +192,7 @@ async def get_message(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         await message.delete()
         msg = types.Message.to_object(data['Admin_message'])
+        await msg.edit_text('Отправляем сообщения...')
         count = await sqlite_db.send_message(message)
         await msg.edit_text(f'Ваше сообщение успешно доставлено {count} пользователям', reply_markup=inline_kb_actions)   
     await Admin.actions.set() 
