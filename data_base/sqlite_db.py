@@ -334,29 +334,57 @@ async def delete_current_pairs():
     cursor.execute('UPDATE users SET last_pairs = %s', (brackets, ))
     base.commit()
     
-async def get_history(id):
+async def get_history(id, state : FSMContext):
     cursor.execute('SELECT all_pairs, impress_of_meet FROM users WHERE id = %s', (id, ))
     data = cursor.fetchone()
-    if data[0] == None or len(data[0]) == 0:
+    all_pairs = data[0]
+    impress_of_meet = data[1]
+    if all_pairs == None or len(all_pairs) == 0:
         return 'У вас ещё не было ни одной встречи'
     
+
+    with state.proxy() as data:
+        start_index : int = 3 * data['Page_num']
+        if start_index > len(all_pairs):
+            start_index -= 3
+            data['Page_num'] -= 1
+        if start_index < 0:
+            start_index = 0
+            data['Page_num'] += 1
+
     history_string = str()
-    counter = 0
-    for user_pair in data[0]:
-        user = await get_profile(user_pair)
+    # counter = 0
+
+    for i in range(3):
+        user = await get_profile(all_pairs[start_index])
         impress = str()
-        if len(data[1]) > counter:
-            if data[1][counter] == 2:
-                impress = 'Отлично✅'
-            elif data[1][counter] == 1:
-                impress = 'Не понравилось🙅‍♂️'
-            else:
-                impress = 'Отсутствует'
+        if impress_of_meet[start_index] == 2:
+            impress = 'Отлично✅'
+        elif impress_of_meet[start_index] == 1:
+            impress = 'Не понравилось🙅‍♂️'
         else:
             impress = 'Отсутствует'
         history_string += f'{user[2]} из города {user[4]}\nВпечатление от встречи : {impress}\nTelegram : {user[1]}\n\n'
-        counter += 1
+        start_index += 1
+        if start_index == len(all_pairs):
+            break
     return history_string
+
+    # for user_pair in all_pairs:
+    #     user = await get_profile(user_pair)
+    #     impress = str()
+    #     if len(impress_of_meet) > counter:
+    #         if impress_of_meet[counter] == 2:
+    #             impress = 'Отлично✅'
+    #         elif impress_of_meet[counter] == 1:
+    #             impress = 'Не понравилось🙅‍♂️'
+    #         else:
+    #             impress = 'Отсутствует'
+    #     else:
+    #         impress = 'Отсутствует'
+    #     history_string += f'{user[2]} из города {user[4]}\nВпечатление от встречи : {impress}\nTelegram : {user[1]}\n\n'
+    #     counter += 1
+    # return history_string
 
 async def current_buddies(id):
     cursor.execute('SELECT last_pairs FROM users WHERE id = %s', (id, ))

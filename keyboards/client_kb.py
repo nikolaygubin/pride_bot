@@ -85,4 +85,8 @@ kb_gender = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(
 
 kb_username = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Проверить username', callback_data='check_username'))  
 
-kb_back_change = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Назад', callback_data='back_mes'))                                                                            
+kb_back_change = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Назад', callback_data='back_mes'))             
+
+kb_history = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyboardButton(text='Вперёд➡️', callback_data='next_history'))\
+                                                       .add(InlineKeyboardButton(text='Назад⬅️', callback_data='prev_history'))\
+                                                       .row(InlineKeyboardButton(text='Выход🔙', callback_data='back_main'))

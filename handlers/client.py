@@ -7,7 +7,7 @@ from aiogram.dispatcher.filters import Text
 from data_base import sqlite_db
 from keyboards import kb_client, inline_kb_quest, inline_kb_succses, inline_kb_go, inline_kb_buy, inline_kb_buy_only,\
                       inline_kb_menu, inline_kb_back_menu, kb_menuchange, inline_kb_menu_buy, inline_kb_quest_format, inline_kb_change_format,\
-                      inline_kb_quest_social, inline_kb_expect, thx_next, accept_photo, kb_purpose, kb_gender, kb_username, kb_back_change
+                      inline_kb_quest_social, inline_kb_expect, thx_next, accept_photo, kb_purpose, kb_gender, kb_username, kb_back_change, kb_history
 from aiogram.types.message import ContentType
 from text import *
 from work_with_pairs import similarity
@@ -272,6 +272,7 @@ async def get_town(message : types.Message, state : FSMContext):
         if message.text in TOWNS:
             msg = types.Message.to_object(data['Last_message'])
             data['Город'] = message.text
+            await msg.delete_reply_markup()
             msg = await message.answer(GET_SOCIAL, reply_markup=inline_kb_quest_social) 
             data['Last_message'] = msg.to_python()    
         else:
@@ -719,11 +720,30 @@ async def get_new_buddy(callback_query : types.CallbackQuery, state : FSMContext
     
 async def get_history(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
-    history = await sqlite_db.get_history(callback_query.from_user.id)
     async with state.proxy() as data:
+        data['Page_num'] = 0
+        history = await sqlite_db.get_history(callback_query.from_user.id, state)
         msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_text(history, reply_markup=inline_kb_back_menu)
+        await msg.edit_text(history, reply_markup=kb_history)
     await Menu.next()
+
+async def next_history(callback_query: types.CallbackQuery, state : FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data:
+        data['Page_num'] += 1
+        history = await sqlite_db.get_history(callback_query.from_user.id, state)
+        msg = types.Message.to_object(data['Main_message'])
+        await msg.edit_text('Поиск пар...')
+        await msg.edit_text(history)
+
+async def prev_history(callback_query: types.CallbackQuery, state : FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data:
+        data['Page_num'] -= 1
+        history = await sqlite_db.get_history(callback_query.from_user.id, state)
+        msg = types.Message.to_object(data['Main_message'])
+        await msg.edit_text('Поиск пар...')
+        await msg.edit_text(history)
 
 async def back_main(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
@@ -1096,7 +1116,11 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(buy_sub, Text(equals='buy_sub', ignore_case=True), state=Menu.menu)
     dp.register_callback_query_handler(current_buddy, Text(equals='current_buddy', ignore_case=True), state=Menu.menu)
     dp.register_callback_query_handler(get_new_buddy, Text(equals='get_new_buddy', ignore_case=True), state=Menu.menu)
+
     dp.register_callback_query_handler(get_history, Text(equals='get_history', ignore_case=True), state=Menu.menu)
+    dp.register_callback_query_handler(next_history, Text(equals='next_history', ignore_case=True), state=Menu.menu_point)
+    dp.register_callback_query_handler(prev_history, Text(equals='prev_history', ignore_case=True), state=Menu.menu_point)
+    
     dp.register_callback_query_handler(back_main, Text(equals='back_main', ignore_case=True), state='*')
     
     # change menu profile
