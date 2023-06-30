@@ -343,7 +343,7 @@ async def get_history(id, state : FSMContext):
         return 'У вас ещё не было ни одной встречи'
     
 
-    with state.proxy() as data:
+    async with state.proxy() as data:
         start_index : int = 3 * data['Page_num']
         if start_index > len(all_pairs):
             start_index -= 3
