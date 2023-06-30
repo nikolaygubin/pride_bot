@@ -722,6 +722,7 @@ async def get_history(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         data['Page_num'] = 0
+    async with state.proxy() as data:
         history = await sqlite_db.get_history(callback_query.from_user.id, state)
         msg = types.Message.to_object(data['Main_message'])
         await msg.edit_text(history, reply_markup=kb_history)
