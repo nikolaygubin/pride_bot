@@ -364,7 +364,7 @@ async def get_history(id, state : FSMContext):
             impress = 'Не понравилось🙅‍♂️'
         else:
             impress = 'Отсутствует'
-        history_string += f'{start_index}. {user[2]} из города {user[4]}\nВпечатление от встречи : {impress}\nTelegram : {user[1]}\n\n'
+        history_string += f'{start_index + 1}. {user[2]} из города {user[4]}\nВпечатление от встречи : {impress}\nTelegram : {user[1]}\n\n'
         start_index += 1
         if start_index == len(all_pairs):
             break
