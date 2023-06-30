@@ -739,7 +739,7 @@ async def next_history(callback_query: types.CallbackQuery, state : FSMContext):
         msg = types.Message.to_object(data['Main_message'])
         if history != None:
             await msg.edit_text(history, reply_markup=kb_history)
-        if cur_page != data['Page_num']:
+        if cur_page == data['Page_num']:
             await msg.edit_reply_markup(kb_only_prev)
 
 async def prev_history(callback_query: types.CallbackQuery, state : FSMContext):
