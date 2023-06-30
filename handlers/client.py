@@ -12,7 +12,6 @@ from aiogram.types.message import ContentType
 from text import *
 from work_with_pairs import similarity
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.exceptions import BotBlocked
 import os
 import datetime
 import validators
@@ -204,7 +203,6 @@ async def get_name(message : types.Message, state : FSMContext):
         data['Телеграм'] = f'@{message.from_user.username}' 
         data['Имя'] = message.text
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text(msg.text + f'\n\n➡️ {message.text}', reply_markup=None)
         photos: UserProfilePhotos = await bot.get_user_profile_photos(message.from_user.id)
         if photos.total_count == 0:
             await bot.send_message(message.from_user.id, 'У вас нет ни одной фотографии профиля!\nПожалуйста, отправьте вашу фотографию')
@@ -273,7 +271,6 @@ async def get_town(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         if message.text in TOWNS:
             msg = types.Message.to_object(data['Last_message'])
-            await msg.edit_text(msg.text + f'\n\n➡️ {message.text}', reply_markup=None)
             data['Город'] = message.text
             msg = await message.answer(GET_SOCIAL, reply_markup=inline_kb_quest_social) 
             data['Last_message'] = msg.to_python()    
@@ -312,7 +309,7 @@ async def maybe_town(callback_query : types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         data['Город'] = data['maybe_town']
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text(msg.text + f'\n\n➡️ {data["maybe_town"]}', reply_markup=None)
+        await msg.delete_reply_markup()
         msg = await bot.send_message(callback_query.from_user.id, GET_SOCIAL, reply_markup=inline_kb_quest_social) 
         data['Last_message'] = msg.to_python()   
     await Client.social_network.set()
@@ -321,7 +318,7 @@ async def enter_town(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text(msg.text + f'\n\n➡️ {data["Город"]}', reply_markup=None)
+        await msg.delete_reply_markup()
         msg = await bot.send_message(callback_query.from_user.id, GET_SOCIAL, reply_markup=inline_kb_quest_social) 
         data['Last_message'] = msg.to_python() 
     await Client.social_network.set()
@@ -337,7 +334,7 @@ async def get_social_network(message : types.Message, state : FSMContext):
             return
         data['Социальные сети'] = message.text
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text(msg.text + f'\n\n➡️ {message.text}', reply_markup=None)
+        await msg.delete_reply_markup()
         msg = await message.answer(GET_WORK, reply_markup=inline_kb_quest)  
         data['Last_message'] = msg.to_python()    
     await Client.next()
@@ -348,7 +345,7 @@ async def get_work(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         data['Работа'] = message.text
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text(msg.text + f'\n\n➡️ {message.text}', reply_markup=None)
+        await msg.delete_reply_markup()
         msg = await message.answer(GET_HOBBY, reply_markup=inline_kb_quest) 
         data['Last_message'] = msg.to_python()    
     await Client.next()
@@ -358,7 +355,7 @@ async def get_hooks(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         data['Зацепки'] = message.text
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text(msg.text + f'\n\n➡️ {message.text}', reply_markup=None)
+        await msg.delete_reply_markup()
         msg = await message.answer(GET_EXPECT, reply_markup=inline_kb_expect)
         data['Last_message'] = msg.to_python()                  
     await Client.next()
@@ -404,7 +401,7 @@ async def get_data(message : types.Message, state : FSMContext):
             data['Last_message'] = msg.to_python()
             return       
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text(msg.text + f'\n\n➡️ {message.text}', reply_markup=None)
+        await msg.delete_reply_markup()
         data['Дата'] = message.text
         msg = await message.answer(CHOOSE_FORMAT, reply_markup=kb_purpose)
         data['Last_message'] = msg.to_python()
@@ -484,7 +481,7 @@ async def get_email(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
         # await msg.delete_reply_markup()
-        await msg.edit_text(msg.text + f'\n\n➡️ {message.text}')
+        await msg.delete_reply_markup()
         data['Email'] = message.text
         data['Оплачено'] = False
         data['Дата_окончания_подписки'] = None
@@ -1009,9 +1006,8 @@ async def at_start(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
-        await msg.delete_reply_markup()
-        # msg = await bot.send_message(callback_query.from_user.id, GET_NAME)
-        # data['Last_message'] = msg.to_python()
+        await msg.delete()
+        await bot.send_message(callback_query.from_user.id, DESCRIBE_WORK)
         video = open('./content/videos/vid1.mp4', 'rb')
         msg = await bot.send_video(callback_query.from_user.id, video, reply_markup=thx_next)
         data['Last_message'] = msg.to_python()
@@ -1024,7 +1020,7 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
         await msg.delete()
 
 async def unknown(message : types.Message):
-    await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\
+    await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\n\
 Введите команду /help если у вас возникли проблемы с ботом')
 
 def register_handlers_client(dp : Dispatcher):
