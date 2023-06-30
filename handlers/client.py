@@ -735,8 +735,8 @@ async def next_history(callback_query: types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         history = await sqlite_db.get_history(callback_query.from_user.id, state)
         msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_text('Поиск пар...', reply_markup=kb_history)
-        await msg.edit_text(history, reply_markup=kb_history)
+        if history != None:
+            await msg.edit_text(history, reply_markup=kb_history)
 
 async def prev_history(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
@@ -745,8 +745,8 @@ async def prev_history(callback_query: types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         history = await sqlite_db.get_history(callback_query.from_user.id, state)
         msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_text('Поиск пар...', reply_markup=kb_history)
-        await msg.edit_text(history, reply_markup=kb_history)
+        if history != None:
+            await msg.edit_text(history, reply_markup=kb_history)
 
 async def back_main(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
