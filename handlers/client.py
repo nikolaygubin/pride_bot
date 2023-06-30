@@ -7,7 +7,8 @@ from aiogram.dispatcher.filters import Text
 from data_base import sqlite_db
 from keyboards import kb_client, inline_kb_quest, inline_kb_succses, inline_kb_go, inline_kb_buy, inline_kb_buy_only,\
                       inline_kb_menu, inline_kb_back_menu, kb_menuchange, inline_kb_menu_buy, inline_kb_quest_format, inline_kb_change_format,\
-                      inline_kb_quest_social, inline_kb_expect, thx_next, accept_photo, kb_purpose, kb_gender, kb_username, kb_back_change, kb_history
+                      inline_kb_quest_social, inline_kb_expect, thx_next, accept_photo, kb_purpose, kb_gender, kb_username, kb_back_change, kb_history,\
+                      kb_only_prev, kb_only_next
 from aiogram.types.message import ContentType
 from text import *
 from work_with_pairs import similarity
@@ -732,11 +733,14 @@ async def next_history(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         data['Page_num'] += 1
+        cur_page = data['Page_num']
     async with state.proxy() as data:
         history = await sqlite_db.get_history(callback_query.from_user.id, state)
         msg = types.Message.to_object(data['Main_message'])
         if history != None:
-            await msg.edit_text(history, reply_markup=kb_history)
+            await msg.edit_text(history, reply_markup=kb_only_next)
+        if cur_page != data['Page_num']:
+            await msg.edit_reply_markup(kb_only_prev)
 
 async def prev_history(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
@@ -747,6 +751,8 @@ async def prev_history(callback_query: types.CallbackQuery, state : FSMContext):
         msg = types.Message.to_object(data['Main_message'])
         if history != None:
             await msg.edit_text(history, reply_markup=kb_history)
+        if data['Page_num'] <= 0:
+            await msg.edit_reply_markup(kb_only_next)
 
 async def back_main(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()

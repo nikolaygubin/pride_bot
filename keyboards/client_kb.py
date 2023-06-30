@@ -90,3 +90,8 @@ kb_back_change = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardBu
 kb_history = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyboardButton(text='Вперёд➡️', callback_data='next_history'))\
                                                        .add(InlineKeyboardButton(text='Назад⬅️', callback_data='prev_history'))\
                                                        .row(InlineKeyboardButton(text='Выход🔙', callback_data='back_main'))
+                                                       
+kb_only_prev = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyboardButton(text='Назад⬅️', callback_data='prev_history'))\
+                                                         .row(InlineKeyboardButton(text='Выход🔙', callback_data='back_main'))
+kb_only_next = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyboardButton(text='Вперёд➡️', callback_data='next_history'))\
+                                                         .row(InlineKeyboardButton(text='Выход🔙', callback_data='back_main'))
