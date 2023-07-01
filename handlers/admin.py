@@ -6,7 +6,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from keyboards import kb_client
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from work_with_pairs import *
+# from work_with_pairs import *
+# from work_with_pairs import make_pairs
+import work_with_pairs
 from aiogram.dispatcher.webhook import SendMessage
 
 ID = [555581588, 261295913, 5446068361, 2137624598]
@@ -149,7 +151,7 @@ async def make_pairs_admin(callback_query : types.CallbackQuery, state : FSMCont
             await msg.edit_text('Подбираем пары...')
         except:
             pass
-        count = await make_pairs()
+        count = await work_with_pairs.make_pairs()
         await msg.edit_text(f'Успешно получилось подобрать {count} пар!', reply_markup=inline_kb_actions)
         
 async def make_extra_pairs_admin(callback_query : types.CallbackQuery, state : FSMContext):
@@ -160,7 +162,7 @@ async def make_extra_pairs_admin(callback_query : types.CallbackQuery, state : F
             await msg.edit_text('Подбираем пары...')
         except:
             pass
-        count = await make_extra_pairs()
+        count = await work_with_pairs.make_extra_pairs()
         await msg.edit_text(f'Успешно получилось подобрать {count} пар!', reply_markup=inline_kb_actions)
         
 async def see_paid(callback_query : types.CallbackQuery, state : FSMContext):
@@ -182,7 +184,7 @@ async def ask_active(callback_query : types.CallbackQuery, state : FSMContext):
             await msg.edit_text('Опрашиваем на активность...')
         except:
             pass
-        count = await is_active()
+        count = await work_with_pairs.is_active()
         await msg.edit_text(f'Удалось опросить {count} пользователей!', reply_markup=inline_kb_actions)
         
 async def ask_impress_admin(callback_query : types.CallbackQuery, state : FSMContext):
@@ -190,7 +192,7 @@ async def ask_impress_admin(callback_query : types.CallbackQuery, state : FSMCon
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
         await msg.edit_text('Оправшиваем о впечатлениях...')
-        count = await ask_impress()
+        count = await work_with_pairs.ask_impress()
         await msg.edit_text(f'Опрос о впечатлениях удалось отправить {count} пользователям!', reply_markup=inline_kb_actions)
         
 async def send_message(callback_query : types.CallbackQuery, state : FSMContext):
