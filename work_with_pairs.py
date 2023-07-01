@@ -23,11 +23,11 @@ async def send_invoice_message(user_id, send_id, text):
     card = f'{text}⏬\n\n{values[2]} из города {values[4]}\nВозраст: {age}\n\nTelegram: {values[1]}\nСоциальная сеть: {values[5]}\n\nЧем занимается: \
 {values[6]}\n\nЗацепки для начала разговора: {values[7]}\n\nЦель использования PRIDE CONNECT: {values[11]}\n\nФормат встречи: {format}\nОт встречи ожидает: {values[8]}'      
     try: 
-        pass
-        # inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text=f'Написать {values[2]}', url='https://t.me/' + values[1][1::]))
-        # await dp.bot.send_photo(send_id, photo=await sqlite_db.get_photo(user_id), caption=card, reply_markup=inline_keyboard)
-        # photo = open('./content/photo/right.jpeg', 'rb')
-        # await dp.bot.send_photo(send_id, photo=photo)
+        # pass
+        inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text=f'Написать {values[2]}', url='https://t.me/' + values[1][1::]))
+        await dp.bot.send_photo(send_id, photo=await sqlite_db.get_photo(user_id), caption=card, reply_markup=inline_keyboard)
+        photo = open('./content/photo/right.jpeg', 'rb')
+        await dp.bot.send_photo(send_id, photo=photo)
     except:
         print('Я в блоке')
     

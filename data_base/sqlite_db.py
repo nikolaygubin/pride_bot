@@ -373,6 +373,7 @@ async def find_users_without_pair():
             if online_id[id] in dict_pairs.values():
                 break
             if id == pair_id or online_id[pair_id] in dict_pairs.keys() or online_id[pair_id] in dict_pairs.values() or await is_last_pair(online_id[id], online_id[pair_id]):
+                await dp.bot.send_message(555581588, 'континию')
                 continue     
             s1 = await get_hooks(online_id[id])
             s2 = await get_hooks(online_id[pair_id])
