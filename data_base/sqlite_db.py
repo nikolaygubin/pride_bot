@@ -5,7 +5,8 @@ from aiogram.dispatcher import FSMContext
 import psycopg2 as ps
 import datetime, calendar, os
 from urllib.parse import urlparse
-from aiogram.dispatcher.webhook import SendMessage
+
+from keyboards.client_kb import kb_history, kb_only_prev, kb_only_next, inline_kb_back_menu
 
 def start_sql():
     global base, cursor
@@ -352,7 +353,6 @@ async def get_history(id, state : FSMContext):
             return None            
 
     history_string = str()
-    # counter = 0
 
     for i in range(3):
         user = await get_profile(all_pairs[start_index])
@@ -367,23 +367,18 @@ async def get_history(id, state : FSMContext):
         start_index += 1
         if start_index == len(all_pairs):
             break
-    return history_string
-
-    # for user_pair in all_pairs:
-    #     user = await get_profile(user_pair)
-    #     impress = str()
-    #     if len(impress_of_meet) > counter:
-    #         if impress_of_meet[counter] == 2:
-    #             impress = 'Отлично✅'
-    #         elif impress_of_meet[counter] == 1:
-    #             impress = 'Не понравилось🙅‍♂️'
-    #         else:
-    #             impress = 'Отсутствует'
-    #     else:
-    #         impress = 'Отсутствует'
-    #     history_string += f'{user[2]} из города {user[4]}\nВпечатление от встречи : {impress}\nTelegram : {user[1]}\n\n'
-    #     counter += 1
-    # return history_string
+    async with state.proxy() as data:
+        msg = types.Message.to_object(data['Main_message'])
+        if len(all_pairs) <= 3:
+            await msg.edit_text(text=history_string, reply_markup=inline_kb_back_menu)
+            return
+        if data['Page_num'] == 0:
+            await msg.edit_text(text=history_string, reply_markup=kb_only_next)
+            return
+        if start_index == len(all_pairs):
+            await msg.edit_text(text=history_string, reply_markup=kb_only_prev)
+            return
+        await msg.edit_text(text=history_string, reply_markup=kb_history)
 
 async def current_buddies(id):
     cursor.execute('SELECT last_pairs FROM users WHERE id = %s', (id, ))

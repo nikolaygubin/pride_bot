@@ -724,36 +724,36 @@ async def get_history(callback_query : types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         data['Page_num'] = 0
     async with state.proxy() as data:
-        history = await sqlite_db.get_history(callback_query.from_user.id, state)
-        msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_text(history, reply_markup=kb_only_next)
+        
+        await sqlite_db.get_history(callback_query.from_user.id, state)
+        # msg = types.Message.to_object(data['Main_message'])
+        # await msg.edit_text(history, reply_markup=kb_only_next)
     await Menu.next()
 
 async def next_history(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
-        cur_page = data['Page_num']
         data['Page_num'] += 1
     async with state.proxy() as data:
-        history = await sqlite_db.get_history(callback_query.from_user.id, state)
-        msg = types.Message.to_object(data['Main_message'])
-        if history != None:
-            await msg.edit_text(history, reply_markup=kb_history)
-    async with state.proxy() as data:
-        if cur_page == data['Page_num']:
-            await msg.edit_reply_markup(kb_only_prev)
+        await sqlite_db.get_history(callback_query.from_user.id, state)
+    #     msg = types.Message.to_object(data['Main_message'])
+    #     if history != None:
+    #         await msg.edit_text(history, reply_markup=kb_history)
+    # async with state.proxy() as data:
+    #     if cur_page == data['Page_num']:
+    #         await msg.edit_reply_markup(kb_only_prev)
 
 async def prev_history(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         data['Page_num'] -= 1
     async with state.proxy() as data:
-        history = await sqlite_db.get_history(callback_query.from_user.id, state)
-        msg = types.Message.to_object(data['Main_message'])
-        if history != None:
-            await msg.edit_text(history, reply_markup=kb_history)
-        if data['Page_num'] <= 0:
-            await msg.edit_reply_markup(kb_only_next)
+        await sqlite_db.get_history(callback_query.from_user.id, state)
+        # msg = types.Message.to_object(data['Main_message'])
+        # if history != None:
+        #     await msg.edit_text(history, reply_markup=kb_history)
+        # if data['Page_num'] <= 0:
+        #     await msg.edit_reply_markup(kb_only_next)
 
 async def back_main(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
