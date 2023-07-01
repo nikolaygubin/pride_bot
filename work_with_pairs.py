@@ -4,6 +4,7 @@ from keyboards import inline_kb_impress, inline_kb_active
 import difflib
 import datetime
 from aiogram.types import  InlineKeyboardButton, InlineKeyboardMarkup
+from handlers.admin import ID
 
 def similarity(s1, s2):
   normalized1 = s1.lower()
@@ -23,7 +24,6 @@ async def send_invoice_message(user_id, send_id, text):
 {values[6]}\n\nЗацепки для начала разговора: {values[7]}\n\nЦель использования PRIDE CONNECT: {values[11]}\n\nФормат встречи: {format}\nОт встречи ожидает: {values[8]}'      
     try:
         inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text=f'Написать {values[2]}', url='https://t.me/' + values[1][1::]))
-        # await dp.bot.send_message(send_id, text + 'Вот твой собеседник, напиши сразу, чтобы не забыть:\n⏬\n\n' + card, reply_markup=inline_keyboard)
         await dp.bot.send_photo(send_id, photo=await sqlite_db.get_photo(user_id), caption=card, reply_markup=inline_keyboard)
         photo = open('./content/photo/right.jpeg', 'rb')
         await dp.bot.send_photo(send_id, photo=photo)
@@ -97,20 +97,6 @@ async def make_pairs():
                 dict_pairs[online_id[id]] = online_id[max_index]
                 await sqlite_db.append_pair(online_id[id], online_id[max_index])
 
-        extra_pairs = 0
-        if len(dict_pairs) * 2 != len(offline_users) + len(online_users):
-            users_without_pair = await sqlite_db.find_users_without_pair()
-            if users_without_pair == None:
-                extra_pairs = 0
-            else:
-                for id in users_without_pair:
-                    await sqlite_db.try_make_pair(id)
-                    try:
-                        await dp.bot.send_message(id, 'К сожалению на этой неделе вам не удалось подобрать пару сразу\nМы занесём вас в дополнительный список, и каждый день будем пытаться подобрать пару снова!')
-                    except:
-                        print('Я в блоке')
-                extra_pairs = await make_extra_pairs()
-
         count = 0
         for key, value in dict_pairs.items():
             if count < offline_size:
@@ -120,7 +106,14 @@ async def make_pairs():
                 await send_invoice_message(key, value, 'Поздравляем! Вам нашлась онлайн пара, советуем написать сразу, приятного общения🤝\n')
                 await send_invoice_message(value, key, 'Поздравляем! Вам нашлась онлайн пара, советуем написать сразу, приятного общения🤝\n')
 
-        return len(dict_pairs) + extra_pairs
+        await dp.bot.send_message(ID[0], f'Подобрано {len(dict_pairs)} пар, из них {offline_size} оффлайн и {len(dict_pairs) - offline_size} онлайн пар!\n\
+Не доставлось пары {(len(offline_users) + len(online_users)) - len(dict_pairs) * 2} пользователям.')
+            
+        if len(dict_pairs) * 2 != len(offline_users) + len(online_users):
+            await sqlite_db.find_users_without_pair(dict_pairs)
+            
+        return len(dict_pairs)
+
     except Exception:
         await dp.bot.send_message(555581588, 'Возникла ошибка при подборе пар')
 async def ask_impress():

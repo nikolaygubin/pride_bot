@@ -153,7 +153,10 @@ async def make_extra_pairs_admin(callback_query : types.CallbackQuery, state : F
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
-        await msg.edit_text('Подбираем пары...')
+        try:
+            await msg.edit_text('Подбираем пары...')
+        except:
+            pass
         count = await make_extra_pairs()
         await msg.edit_text(f'Успешно получилось подобрать {count} пар!', reply_markup=inline_kb_actions)
         

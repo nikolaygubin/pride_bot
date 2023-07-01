@@ -5,6 +5,7 @@ from aiogram.dispatcher import FSMContext
 import psycopg2 as ps
 import datetime, calendar, os
 from urllib.parse import urlparse
+from work_with_pairs import *
 
 from keyboards.client_kb import kb_history, kb_only_prev, kb_only_next, inline_kb_back_menu
 
@@ -305,14 +306,80 @@ async def is_last_pair(id, pair_id):
         return False
     
 async def find_users_without_pair():
-    cursor.execute('SELECT id FROM users WHERE array_upper(last_pairs, 1) is null and active = true')
+    cursor.execute('SELECT id, online FROM users WHERE array_upper(last_pairs, 1) is null and active = true')
     users = cursor.fetchall()
     if users == None:
-        return []
-    users_id = []
+        return
+    
+    cursor.execute('SELECT id FROM users WHERE array_upper(last_pairs, 1) is not null and active = true and online = true')
+    online_users = cursor.fetchall()
+    cursor.execute('SELECT id FROM users WHERE array_upper(last_pairs, 1) is not null and active = true and online = false')
+    offline_users = cursor.fetchall()  
+    
     for user in users:
-        users_id.append(user[0])
-    return users_id
+        try:
+            await bot.send_message(user[0], 'К сожалению на этой неделе вам не удалось подобрать пару сразу\nМы занесём вас в дополнительный список, и каждый день будем пытаться подобрать пару снова!')
+        except:
+            print('Я в блоке')
+    
+    dict_pairs = dict(str()) # словарь со всеми парами
+
+    offline_dict = {} # инициализируем словарь и заносим туда всех оффлайн пользователей по городам
+    for user in offline_users: 
+        town = user[1].lower()
+        if offline_dict.get(town) == None:
+            offline_dict[town] = list()
+        offline_dict[town].append(user[0])
+        
+    for town in offline_dict.keys(): # проходимся по всем городам и пытаемся сформировать пары
+        town_id = list(offline_dict[town]) # иницализируем массив с пользователями в городе town
+        for id in range(len(town_id)): # пытаемся подобрать пару каждому пользователю
+            max_sim = -1    # максимальная схожесть
+            max_index = id  # индекс с максимальной схожестью (по умолчанию ссылается на самого себя)
+            for pair_id in range(len(town_id)):
+                if town_id[id] in dict_pairs.values():
+                    break
+                if id == pair_id or town_id[pair_id] in dict_pairs.keys() or town_id[pair_id] in dict_pairs.values() or await is_last_pair(town_id[id], town_id[pair_id]):
+                    continue   
+                s1 = await get_hooks(town_id[id])
+                s2 = await get_hooks(town_id[pair_id])
+                sim = similarity(s1, s2) # процент схожести 2 строк 
+                if sim > max_sim:
+                    max_index = pair_id
+                    max_sim = sim
+            if max_index != id:
+                dict_pairs[town_id[id]] = town_id[max_index]
+                await send_maybe_pair(town_id[id], town_id[max_index], 'Мы нашли максимально подходящую вам дополнительную оффлайн пару, не хотите ли встретиться 2 раза на этой неделе?\n')
+                # await sqlite_db.append_pair(town_id[id], town_id[max_index]) # добавляем пары в базу данных
+                offline_dict[town].remove(town_id[id])
+                offline_dict[town].remove(town_id[max_index])
+    offline_size = len(dict_pairs)
+    online_id = list() # создаём список и добавляем туда все онлайн id
+    for town in offline_dict.keys():
+        users = offline_dict[town]
+        for user in users:
+            online_id.append(user)
+    for user in online_users:
+        online_id.append(user[0])
+    for id in range(len(online_id)):
+        max_sim = -1
+        max_index = id
+        for pair_id in range(len(online_id)):
+            if online_id[id] in dict_pairs.values():
+                break
+            if id == pair_id or online_id[pair_id] in dict_pairs.keys() or online_id[pair_id] in dict_pairs.values() or await sqlite_db.is_last_pair(online_id[id], online_id[pair_id]):
+                continue     
+            s1 = await sqlite_db.get_hooks(online_id[id])
+            s2 = await sqlite_db.get_hooks(online_id[pair_id])
+            sim = similarity(s1, s2)
+            if sim > max_sim:
+                max_index = pair_id
+                max_sim = sim
+        if max_index != id:
+            dict_pairs[online_id[id]] = online_id[max_index]
+            # await sqlite_db.append_pair(online_id[id], online_id[max_index])
+            await send_maybe_pair(town_id[id], town_id[max_index], 'Мы нашли максимально подходящую вам дополнительную онлайн пару, не хотите ли встретиться 2 раза на этой неделе?\n')
+
 
 async def make_impress(user_id, pair_id, num_impress):
     cursor.execute('SELECT all_pairs FROM users WHERE id = %s', (user_id, ))
@@ -530,3 +597,19 @@ async def check_block():
         except:
             cursor.execute('UPDATE users SET active = false WHERE id = %s', (user[0], ))
             base.commit()
+            
+async def send_maybe_pair(user_id, send_id, text):
+    values = list(await get_profile(user_id))
+    age = datetime.datetime.now().year - int(values[10].split('.')[2])
+    format = str()
+    if values[9]:
+        format = 'Онлайн'
+    else :
+        format = 'Оффлайн'
+    card = f'{text}⏬\n\n{values[2]} из города {values[4]}\nВозраст: {age}\n\nTelegram: {values[1]}\nСоциальная сеть: {values[5]}\n\nЧем занимается: \
+{values[6]}\n\nЗацепки для начала разговора: {values[7]}\n\nЦель использования PRIDE CONNECT: {values[11]}\n\nФормат встречи: {format}\nОт встречи ожидает: {values[8]}'      
+    try:
+        inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Согласен', callback_data='agree')).add(InlineKeyboardButton(text='Откажусь', callback_data='disagree'))
+        await dp.bot.send_photo(send_id, photo=await get_photo(user_id), caption=card, reply_markup=inline_keyboard)
+    except:
+        print('Я в блоке')
