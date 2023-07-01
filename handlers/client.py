@@ -173,8 +173,6 @@ async def next_step(callback_query : types.CallbackQuery, state : FSMContext):
     await bot.send_message(callback_query.from_user.id, DESCRIBE_WORK)
     video = open('./content/videos/vid1.mp4', 'rb')
     async with state.proxy() as data:
-        msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text(msg.text + f'\n\n➡️ Поехали 🚀', reply_markup=None)
         msg = await bot.send_video(callback_query.from_user.id, video, reply_markup=thx_next)
         data['Last_message'] = msg.to_python()
 
