@@ -127,8 +127,11 @@ async def ask_impress():
         for pair in reversed(user[1]):
             if user[2][-1 - counter] == 0:
                 pair_user = await sqlite_db.get_profile(pair)
-                await dp.bot.send_message(user[0], f'Как прошла встреча с {pair_user[2]} из города {pair_user[4]}?\nTg : {pair_user[1]}', reply_markup=inline_kb_impress)
-                count += 1
+                try:
+                    await dp.bot.send_message(user[0], f'Как прошла встреча с {pair_user[2]} из города {pair_user[4]}?\nTg : {pair_user[1]}', reply_markup=inline_kb_impress)
+                    count += 1
+                except:
+                    pass
             counter += 1
     return count
             

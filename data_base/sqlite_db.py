@@ -483,7 +483,10 @@ async def update():
         if date_out < present:
             counter += 1
             await remove_active(user[0])
-            await bot.send_message(user[0], 'Ваша подписка истекла, чтобы дальше продолжать подбор собеседников совершите оплату')
+            try:
+                await bot.send_message(user[0], 'Ваша подписка истекла, чтобы дальше продолжать подбор собеседников совершите оплату')
+            except:
+                pass
     return counter
     
     
