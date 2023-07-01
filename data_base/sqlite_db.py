@@ -341,6 +341,7 @@ async def get_history(id, state : FSMContext):
     all_pairs = data[0]
     impress_of_meet = data[1]
     if all_pairs == None or len(all_pairs) == 0:
+        msg = types.Message.to_object(data['Main_message'])
         await msg.edit_text(text='У вас ещё не было ни одной встречи', reply_markup=inline_kb_back_menu)
         return
     
