@@ -110,7 +110,7 @@ async def make_pairs():
 Не доставлось пары {(len(offline_users) + len(online_users)) - len(dict_pairs) * 2} пользователям.')
             
         if len(dict_pairs) * 2 != len(offline_users) + len(online_users):
-            await sqlite_db.find_users_without_pair(dict_pairs)
+            await sqlite_db.find_users_without_pair()
             
         return len(dict_pairs)
 
