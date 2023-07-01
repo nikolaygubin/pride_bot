@@ -161,7 +161,10 @@ async def see_paid(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
-        await msg.edit_text('Проверяем подписку...')
+        try:
+            await msg.edit_text('Проверяем подписку...')
+        except:
+            pass
         count = await sqlite_db.update()
         await msg.edit_text(f'Найдено и обнулено {count} просроченных подписок!', reply_markup=inline_kb_actions)
         
@@ -169,7 +172,10 @@ async def ask_active(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
-        await msg.edit_text('Опрашиваем на активность...')
+        try:
+            await msg.edit_text('Опрашиваем на активность...')
+        except:
+            pass
         count = await is_active()
         await msg.edit_text(f'Удалось опросить {count} пользователей!', reply_markup=inline_kb_actions)
         
