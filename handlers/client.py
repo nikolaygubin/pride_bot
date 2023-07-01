@@ -134,7 +134,7 @@ async def next_step(callback_query : types.CallbackQuery, state : FSMContext):
             await bot.send_message(callback_query.from_user.id, f'Вы уже зарегестрированы в нашей системе✅\n\
 Подписка действует до {date_paid[0]} {month_dict[int(date_paid[1])]} {date_paid[2]} года⏳')
             async with state.proxy() as data:
-                msg = await bot.send_message(callback_query.from_user.id, 'Главное меню', reply_markup=inline_kb_menu)
+                msg = await bot.send_message(callback_query.from_user.id, MENU, reply_markup=inline_kb_menu)
                 data['Main_message'] = msg.to_python()
             await Menu.menu.set()
             return
@@ -182,7 +182,7 @@ async def menu(message : types.Message, state : FSMContext):
         if await sqlite_db.is_register(message.from_user.id) == False:
             await message.answer('Для того, чтобы перейти в главное меню вы должны заполнить анкету!\nВведите /start, чтобы начать заполнение или воспользуйтесь опцией /help')
             return
-        msg = await message.answer('Главное меню', reply_markup=inline_kb_menu)
+        msg = await message.answer(MENU, reply_markup=inline_kb_menu)
         data['Main_message'] = msg.to_python()
     await Menu.menu.set()
 
@@ -523,7 +523,7 @@ async def succses(callback_query : types.CallbackQuery, state : FSMContext):
     user = await sqlite_db.check_paid(callback_query.from_user.id)
     if user[0]:
         async with state.proxy() as data:
-            msg = await bot.send_message(callback_query.from_user.id, 'Главное меню', reply_markup=inline_kb_menu)
+            msg = await bot.send_message(callback_query.from_user.id, MENU, reply_markup=inline_kb_menu)
             data['Main_message'] = msg.to_python()
         await Menu.menu.set()
         return
@@ -563,7 +563,7 @@ async def check_promo(message : types.Message, state : FSMContext):
             await sqlite_db.add_demo_paid(message.from_user.id)
             await state.finish()
             await Menu.menu.set()
-            msg = await message.answer('Главное меню', reply_markup=inline_kb_menu)
+            msg = await message.answer(MENU, reply_markup=inline_kb_menu)
             data['Main_message'] = msg.to_python()
             return
         promo_amount = data['Promo']
@@ -576,7 +576,7 @@ async def buy_later(callbck_query : types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
         await msg.edit_reply_markup(None)
-        msg = await bot.send_message(callbck_query.from_user.id, 'Главное меню', reply_markup=inline_kb_menu)
+        msg = await bot.send_message(callbck_query.from_user.id, MENU, reply_markup=inline_kb_menu)
         data['Main_message'] = msg.to_python()
     await Menu.menu.set()
     
@@ -613,7 +613,7 @@ async def successful_payment(message : types.Message, state : FSMContext):
         if 'Main_message' in data.keys():
             msg = types.Message.to_object(data['Main_message'])
             await msg.delete()
-        msg = await message.answer('Главное меню', reply_markup=inline_kb_menu) 
+        msg = await message.answer(MENU, reply_markup=inline_kb_menu)
         data['Main_message'] = msg.to_python()
     await Menu.menu.set()
       
@@ -759,7 +759,7 @@ async def back_main(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_text('Главное меню', reply_markup=inline_kb_menu)
+        await msg.edit_text(MENU, reply_markup=inline_kb_menu)
     await Menu.previous()                     
     
 async def change_name(callback_query : types.CallbackQuery, state : FSMContext):
@@ -869,7 +869,7 @@ async def change_exit(callback_query : types.CallbackQuery, state :  FSMContext)
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_text('Главное меню', reply_markup=inline_kb_menu)
+        await msg.edit_text(MENU, reply_markup=inline_kb_menu)
     await Menu.previous()
     
 async def set_change (message : types.Message, state : FSMContext):
@@ -969,7 +969,7 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
             await sqlite_db.add_demo_paid(message.from_user.id)
             msg = types.Message.to_object(data['Main_message'])
             await msg.edit_text('Вы ввели уникальный промокод, ваша подписка продлена на месяц!👌')
-            msg = await message.answer('Главное меню', reply_markup=inline_kb_menu)
+            msg = await message.answer(MENU, reply_markup=inline_kb_menu)
             data['Main_message'] = msg.to_python()
             await Menu.menu.set()
             return
