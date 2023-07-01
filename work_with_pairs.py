@@ -31,7 +31,7 @@ async def send_invoice_message(user_id, send_id, text):
         print('Я в блоке')
     
 async def make_pairs():
-    try:
+    # try:
         # await sqlite_db.check_block()
         await sqlite_db.clear_temp_users()
         await sqlite_db.delete_current_pairs()
@@ -114,8 +114,8 @@ async def make_pairs():
             
         return len(dict_pairs)
 
-    except Exception:
-        await dp.bot.send_message(555581588, 'Возникла ошибка при подборе пар')
+    # except Exception:
+    #     await dp.bot.send_message(555581588, 'Возникла ошибка при подборе пар')
 async def ask_impress():
     users = await sqlite_db.get_users()
     if len(users) == 0:
