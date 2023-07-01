@@ -47,11 +47,10 @@ inline_kb_buy_only = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyboa
 
 inline_kb_go = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Поехали 🚀', callback_data='next'))
 
-inline_kb_menu = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Мой профиль📔', callback_data='show_profile'), InlineKeyboardButton(text='Редактировать анкету✏️', callback_data='change_profile'))\
-                                                            .row(InlineKeyboardButton(text='Проверить подписку✔️', callback_data='check_paid'), InlineKeyboardButton(text='Оплатить подписку💵', callback_data='buy_sub'))\
-                                                            .row(InlineKeyboardButton(text='Текущий собеседник💬', callback_data='current_buddy'), InlineKeyboardButton(text='Новый собеседник🆕', callback_data='get_new_buddy'))\
+inline_kb_menu = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Мой профиль📔', callback_data='show_profile'), InlineKeyboardButton(text='Редактировать✏️', callback_data='change_profile'))\
+                                                            .row(InlineKeyboardButton(text='Моя подписка✔️', callback_data='check_paid'), InlineKeyboardButton(text='Оплатить💵', callback_data='buy_sub'))\
+                                                            .row(InlineKeyboardButton(text='Текущая пара💬', callback_data='current_buddy'), InlineKeyboardButton(text='Новая пара🆕', callback_data='get_new_buddy'))\
                                                             .row(InlineKeyboardButton(text='История встреч🤝', callback_data='get_history'))
-                                                            # .row(InlineKeyboardButton(text='История встреч🤝', web_app=WebAppInfo( url="https://nikolaygubin.github.io/website")))
 
 inline_kb_back_menu = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyboardButton(text='Назад🔙', callback_data='back_main'))
 

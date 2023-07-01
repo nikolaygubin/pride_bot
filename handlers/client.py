@@ -1029,14 +1029,24 @@ async def restart(message : types.Message, state : FSMContext):
                                                               InlineKeyboardButton(text='Отмена', callback_data='cancel'))
     async with state.proxy() as data:
         msg = await message.answer('Вы действительно хотите перезаполнить анкету?\nМожете не беспокоиться за вашу оплату, она сохраняется в базе!', reply_markup=keyboard)
-        data['Last_message'] = msg.to_python()
+        data['Restart_message'] = msg.to_python()
     await message.delete()
   
 async def at_start(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
-        msg = types.Message.to_object(data['Last_message'])
+        msg = types.Message.to_object(data['Restart_message'])
         await msg.delete()
+        try:
+            msg = types.Message.to_object(data['Last_message'])
+            await msg.delete_reply_markup()
+        except:
+            pass
+        try:
+            msg = types.Message.to_object(data['Main_message'])
+            await msg.delete_reply_markup()
+        except:
+            pass
         await bot.send_message(callback_query.from_user.id, DESCRIBE_WORK)
         video = open('./content/videos/vid1.mp4', 'rb')
         msg = await bot.send_video(callback_query.from_user.id, video, reply_markup=thx_next)
@@ -1046,7 +1056,7 @@ async def at_start(callback_query: types.CallbackQuery, state : FSMContext):
 async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
-        msg = types.Message.to_object(data['Last_message'])
+        msg = types.Message.to_object(data['Restart_message'])
         await msg.delete()
 
 async def unknown(message : types.Message):
