@@ -316,6 +316,8 @@ async def find_users_without_pair():
     cursor.execute('SELECT id, town FROM users WHERE array_upper(last_pairs, 1) is not null and active = true and online = false')
     offline_users = cursor.fetchall()  
     
+    await dp.bot.send_message(555581588, f'{len(online_users) ---- {len(offline_users)}}')
+    
     for user in users:
         try:
             await bot.send_message(user[0], 'К сожалению на этой неделе вам не удалось подобрать пару сразу\nМы занесём вас в дополнительный список, и каждый день будем пытаться подобрать пару снова!')
@@ -361,16 +363,19 @@ async def find_users_without_pair():
             online_id.append(user)
     for user in online_users:
         online_id.append(user[0])
+        
+    await dp.bot.send_message(555581588, f'{len(online_id)})')
+        
     for id in range(len(online_id)):
         max_sim = -1
         max_index = id
         for pair_id in range(len(online_id)):
             if online_id[id] in dict_pairs.values():
                 break
-            if id == pair_id or online_id[pair_id] in dict_pairs.keys() or online_id[pair_id] in dict_pairs.values() or await sqlite_db.is_last_pair(online_id[id], online_id[pair_id]):
+            if id == pair_id or online_id[pair_id] in dict_pairs.keys() or online_id[pair_id] in dict_pairs.values() or await is_last_pair(online_id[id], online_id[pair_id]):
                 continue     
-            s1 = await sqlite_db.get_hooks(online_id[id])
-            s2 = await sqlite_db.get_hooks(online_id[pair_id])
+            s1 = await get_hooks(online_id[id])
+            s2 = await get_hooks(online_id[pair_id])
             sim = similarity(s1, s2)
             if sim > max_sim:
                 max_index = pair_id
