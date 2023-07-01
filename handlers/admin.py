@@ -149,7 +149,7 @@ async def make_pairs_admin(callback_query : types.CallbackQuery, state : FSMCont
         count = await make_pairs()
         await msg.edit_text(f'Успешно получилось подобрать {count} пар!', reply_markup=inline_kb_actions)
         
-async def make_extra_pairs_admin(callback_query : types.callback_query, state : FSMContext):
+async def make_extra_pairs_admin(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
@@ -157,7 +157,7 @@ async def make_extra_pairs_admin(callback_query : types.callback_query, state : 
         count = await make_extra_pairs()
         await msg.edit_text(f'Успешно получилось подобрать {count} пар!', reply_markup=inline_kb_actions)
         
-async def see_paid(callback_query : types.callback_query, state : FSMContext):
+async def see_paid(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
@@ -165,7 +165,7 @@ async def see_paid(callback_query : types.callback_query, state : FSMContext):
         count = await sqlite_db.update()
         await msg.edit_text(f'Найдено и обнулено {count} просроченных подписок!', reply_markup=inline_kb_actions)
         
-async def ask_active(callback_query : types.callback_query, state : FSMContext):
+async def ask_active(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
@@ -173,7 +173,7 @@ async def ask_active(callback_query : types.callback_query, state : FSMContext):
         count = await is_active()
         await msg.edit_text(f'Удалось опросить {count} пользователей!', reply_markup=inline_kb_actions)
         
-async def ask_impress_admin(callback_query : types.callback_query, state : FSMContext):
+async def ask_impress_admin(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
@@ -181,7 +181,7 @@ async def ask_impress_admin(callback_query : types.callback_query, state : FSMCo
         count = await ask_impress()
         await msg.edit_text(f'Опрос о впечатлениях удалось отправить {count} пользователям!', reply_markup=inline_kb_actions)
         
-async def send_message(callback_query : types.callback_query, state : FSMContext):
+async def send_message(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
@@ -197,20 +197,20 @@ async def get_message(message : types.Message, state : FSMContext):
         await msg.edit_text(f'Ваше сообщение успешно доставлено {count} пользователям', reply_markup=inline_kb_actions)   
     await Admin.actions.set() 
 
-async def back_act(callback_query : types.callback_query, state : FSMContext):
+async def back_act(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
         await msg.edit_text('Действия', reply_markup=inline_kb_actions)
     await Admin.actions.set()
         
-async def promocodes_menu(callback_query : types.callback_query, state : FSMContext):
+async def promocodes_menu(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
         await msg.edit_text('Промокоды', reply_markup=inline_kb_promo)
 
-async def show_promo(callback_query : types.callback_query, state : FSMContext) :
+async def show_promo(callback_query : types.CallbackQuery, state : FSMContext) :
     await callback_query.answer() 
     all_promo = await sqlite_db.get_promocodes() 
     str_promo = 'Промокоды :\n'
@@ -222,7 +222,7 @@ async def show_promo(callback_query : types.callback_query, state : FSMContext) 
         msg = types.Message.to_object(data['Admin_message']) 
         await msg.edit_text(str_promo, reply_markup=inline_kb_back_promo)
      
-async def add_promo(callback_query : types.callback_query, state : FSMContext):
+async def add_promo(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer() 
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message']) 
@@ -238,20 +238,20 @@ async def get_promo(message : types.Message, state : FSMContext):
     await Admin.promocodes.set()
     
    
-async def back_promo(callback_query : types.callback_query, state : FSMContext):
+async def back_promo(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer() 
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
         await msg.edit_text('Промокоды', reply_markup=inline_kb_promo)
     
-async def actions_menu(callback_query : types.callback_query, state : FSMContext):
+async def actions_menu(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message'])
         await msg.edit_text('Действия', reply_markup=inline_kb_actions)
     await Admin.actions.set()
     
-async def del_promo(callback_query : types.callback_query, state : FSMContext):
+async def del_promo(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message']) 
