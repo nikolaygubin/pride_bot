@@ -316,7 +316,7 @@ async def find_users_without_pair():
     cursor.execute('SELECT id, town FROM users WHERE array_upper(last_pairs, 1) is not null and active = true and online = false')
     offline_users = cursor.fetchall()  
     
-    await dp.bot.send_message(555581588, f'{len(online_users) ---- {len(offline_users)}}')
+    await dp.bot.send_message(555581588, f'{len(online_users)} ---- {len(offline_users)}')
     
     for user in users:
         try:
