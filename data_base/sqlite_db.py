@@ -313,7 +313,7 @@ async def find_users_without_pair():
     
     cursor.execute('SELECT id FROM users WHERE array_upper(last_pairs, 1) is not null and active = true and online = true')
     online_users = cursor.fetchall()
-    cursor.execute('SELECT id FROM users WHERE array_upper(last_pairs, 1) is not null and active = true and online = false')
+    cursor.execute('SELECT id, town FROM users WHERE array_upper(last_pairs, 1) is not null and active = true and online = false')
     offline_users = cursor.fetchall()  
     
     for user in users:
