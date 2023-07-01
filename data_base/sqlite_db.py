@@ -364,7 +364,7 @@ async def find_users_without_pair():
     for user in online_users:
         online_id.append(user[0])
         
-    await dp.bot.send_message(555581588, f'{len(online_id)})')
+    await dp.bot.send_message(555581588, f'{len(online_id)}')
         
     for id in range(len(online_id)):
         max_sim = -1
@@ -383,7 +383,7 @@ async def find_users_without_pair():
         if max_index != id:
             dict_pairs[online_id[id]] = online_id[max_index]
             # await sqlite_db.append_pair(online_id[id], online_id[max_index])
-            await send_maybe_pair(town_id[id], town_id[max_index], 'Мы нашли максимально подходящую вам дополнительную онлайн пару, не хотите ли встретиться 2 раза на этой неделе?\n')
+            await send_maybe_pair(online_id[id], online_id[max_index], 'Мы нашли максимально подходящую вам дополнительную онлайн пару, не хотите ли встретиться 2 раза на этой неделе?\n')
 
 
 async def make_impress(user_id, pair_id, num_impress):
