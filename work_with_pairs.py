@@ -11,7 +11,7 @@ def similarity(s1, s2):
   matcher = difflib.SequenceMatcher(None, normalized1, normalized2)
   return matcher.ratio()
 
-async def send_invoice_message(user_id, send_id):
+async def send_invoice_message(user_id, send_id, text):
     values = list(await sqlite_db.get_profile(user_id))
     age = datetime.datetime.now().year - int(values[10].split('.')[2])
     format = str()
@@ -19,7 +19,7 @@ async def send_invoice_message(user_id, send_id):
         format = 'Онлайн'
     else :
         format = 'Оффлайн'
-    card = f'Поздравляем! Вам нашёлся собеседник, спишитесь с ним в удобной для вас соцсети, приятного общения🤝\n⏬\n\n{values[2]} из города {values[4]}\nВозраст: {age}\n\nTelegram: {values[1]}\nСоциальная сеть: {values[5]}\n\nЧем занимается: \
+    card = f'{text}⏬\n\n{values[2]} из города {values[4]}\nВозраст: {age}\n\nTelegram: {values[1]}\nСоциальная сеть: {values[5]}\n\nЧем занимается: \
 {values[6]}\n\nЗацепки для начала разговора: {values[7]}\n\nЦель использования PRIDE CONNECT: {values[11]}\n\nФормат встречи: {format}\nОт встречи ожидает: {values[8]}'      
     try:
         inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text=f'Написать {values[2]}', url='https://t.me/' + values[1][1::]))
@@ -68,6 +68,8 @@ async def make_pairs():
                     offline_dict[town].remove(town_id[id])
                     offline_dict[town].remove(town_id[max_index])
 
+        offline_size = len(dict_pairs)
+
         online_id = list() # создаём список и добавляем туда все онлайн id
         for town in offline_dict.keys():
             users = offline_dict[town]
@@ -109,10 +111,14 @@ async def make_pairs():
                         print('Я в блоке')
                 extra_pairs = await make_extra_pairs()
 
-
-        # for key, value in dict_pairs.items():
-        #     await send_invoice_message(key, value)
-        #     await send_invoice_message(value, key)
+        count = 0
+        for key, value in dict_pairs.items():
+            if count < offline_size:
+                await send_invoice_message(key, value, 'Поздравляем! Вам нашлась оффлайн пара, советуем договориться о встрече сразу, приятного общения🤝\n')
+                await send_invoice_message(value, key, 'Поздравляем! Вам нашлась оффлайн пара, советуем договориться о встрече сразу, приятного общения🤝\n')
+            else:
+                await send_invoice_message(key, value, 'Поздравляем! Вам нашлась онлайн пара, советуем написать сразу, приятного общения🤝\n')
+                await send_invoice_message(value, key, 'Поздравляем! Вам нашлась онлайн пара, советуем написать сразу, приятного общения🤝\n')
 
         return len(dict_pairs) + extra_pairs
     except Exception:

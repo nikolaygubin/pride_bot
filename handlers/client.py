@@ -123,6 +123,22 @@ async def back(callback_query : types.CallbackQuery, state : FSMContext):
 
 async def next_step(callback_query : types.CallbackQuery, state : FSMContext):    
     await callback_query.answer()
+    async with state.proxy() as data:
+        try:
+            msg = types.Message.to_object(data['Last_message'])
+            await msg.edit_text(msg.text + f'\n\n➡️ Поехали 🚀', reply_markup=None)
+        except:
+            pass
+        try:
+            msg = types.Message.to_object(data['Last_message'])
+            await msg.delete_reply_markup()
+        except:
+            pass
+        try:
+            msg = types.Message.to_object(data['Main_message'])
+            await msg.delete_reply_markup()
+        except:
+            pass
     is_reg = await sqlite_db.is_register(callback_query.from_user.id)
     if is_reg:
         date = await sqlite_db.check_paid(callback_query.from_user.id)
