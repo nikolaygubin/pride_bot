@@ -381,6 +381,7 @@ async def find_users_without_pair():
                 max_index = pair_id
                 max_sim = sim
         if max_index != id:
+            await dp.bot.send_message(555581588, 'есть контакт')
             dict_pairs[online_id[id]] = online_id[max_index]
             # await sqlite_db.append_pair(online_id[id], online_id[max_index])
             await send_maybe_pair(online_id[id], online_id[max_index], 'Мы нашли максимально подходящую вам дополнительную онлайн пару, не хотите ли встретиться 2 раза на этой неделе?\n')
