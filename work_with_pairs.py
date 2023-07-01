@@ -110,9 +110,9 @@ async def make_pairs():
                 extra_pairs = await make_extra_pairs()
 
 
-        for key, value in dict_pairs.items():
-            await send_invoice_message(key, value)
-            await send_invoice_message(value, key)
+        # for key, value in dict_pairs.items():
+        #     await send_invoice_message(key, value)
+        #     await send_invoice_message(value, key)
 
         return len(dict_pairs) + extra_pairs
     except Exception:
