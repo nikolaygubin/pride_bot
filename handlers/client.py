@@ -740,8 +740,6 @@ async def get_history(callback_query : types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         
         await sqlite_db.get_history(callback_query.from_user.id, state)
-        # msg = types.Message.to_object(data['Main_message'])
-        # await msg.edit_text(history, reply_markup=kb_only_next)
     await Menu.next()
 
 async def next_history(callback_query: types.CallbackQuery, state : FSMContext):

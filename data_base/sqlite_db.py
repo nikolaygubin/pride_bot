@@ -341,7 +341,8 @@ async def get_history(id, state : FSMContext):
     all_pairs = data[0]
     impress_of_meet = data[1]
     if all_pairs == None or len(all_pairs) == 0:
-        return 'У вас ещё не было ни одной встречи'
+        await msg.edit_text(text='У вас ещё не было ни одной встречи', reply_markup=inline_kb_back_menu)
+        return
     
     async with state.proxy() as data:
         start_index : int = 3 * data['Page_num']
