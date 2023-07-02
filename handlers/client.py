@@ -1148,13 +1148,28 @@ async def menu_buy_year(callback_query : types.CallbackQuery, state : FSMContext
     await Menu.buy_year.set()
 
 async def menu_back(callback_query : types.CallbackQuery, state : FSMContext):
-    await callback_query.answer()
+    await callback_query.answer()  
+    date = await sqlite_db.check_paid(callback_query.from_user.id)
     async with state.proxy() as data:
-        msg = types.Message.to_object(data['Main_message'])
-        if data['menu_buy_type'] == 0 :
-            await msg.edit_text(f'Вы выбрали подписку на месяц. Цена составит {PRICE_MONTH.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
-        else:
-            await msg.edit_text(f'Вы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+        data['Promo'] = 0
+        if date[0] == True:
+            date_paid = date[1].split('-')
+            month_dict = {1 : 'Января', 2 : 'Февраля', 3 : 'Марта', 4 : 'Апреля', 5 : 'Мая',
+                          6 : 'Июня', 7 : 'Июля', 8 : 'Августа', 9 : 'Сенятбря', 10 : 'Октября',
+                          11 : 'Ноября', 12 : 'Декабря'}     
+            msg = types.Message.to_object(data['Main_message'])          
+            await msg.edit_text(f'Ваша подписка действует до {date_paid[0]} {month_dict[int(date_paid[1])]} {date_paid[2]} года⏳\nМожете заранее оплатить подписку на месяц вперёд🌟', reply_markup=inline_kb_menu_buy)
+        else :
+            if date[1] == None:
+                msg = types.Message.to_object(data['Main_message'])
+                await msg.edit_text('Ваша подписка ещё ни разу не была оплачена, нажмите на кнопку оплатить, чтобы купить месячную подписку', reply_markup=inline_kb_menu_buy)
+            else :
+                paid_date = date[1].split('-')
+                month_dict = {1 : 'Января', 2 : 'Февраля', 3 : 'Марта', 4 : 'Апреля', 5 : 'Мая',
+                              6 : 'Июня', 7 : 'Июля', 8 : 'Августа', 9 : 'Сенятбря', 10 : 'Октября',
+                              11 : 'Ноября', 12 : 'Декабря'}   
+                msg = types.Message.to_object(data['Main_message'])            
+                await msg.edit_text(f'Ваша подписка истекла {paid_date[0]} {month_dict[int(paid_date[1])]} {paid_date[2]} года⏳', reply_markup=inline_kb_menu_buy) 
     await Menu.start_pay.set()
 
 def register_handlers_client(dp : Dispatcher):
