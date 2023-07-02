@@ -53,7 +53,7 @@ inline_kb_menu_buy = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboa
 
 inline_menu_promo = InlineKeyboardMarkup(resize_keyboard=True).row(menu_promo_button)\
                                                          .row(InlineKeyboardButton(text='Оплатить сразу', callback_data='buy_now_menu'))\
-                                                         .row(inl_button1)
+                                                         .row(InlineKeyboardButton(text='Назад🔙', callback_data='menu_back'))
 
 
 inline_kb_buy_only = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyboardButton(text='Оплатить', callback_data='buy'))\

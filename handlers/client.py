@@ -70,7 +70,7 @@ async def back(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     current_state = await state.get_state()
     async with state.proxy() as data:
-        if current_state != Client.buy_month.state and current_state != Client.buy_year.state and current_state != Client.get_promocode.state :
+        if current_state != Client.buy_month.state and current_state != Client.buy_year.state and current_state != Client.get_promocode.state and current_state != Menu.get_promocode.state:
             msg : types.Message = types.Message.to_object(data['Last_message'])
             await msg.edit_reply_markup(None)
             await msg.delete()
@@ -132,6 +132,16 @@ async def back(callback_query : types.CallbackQuery, state : FSMContext):
             msg = types.Message.to_object(data['Last_message'])
             await msg.edit_text(ABOUT_SUB, reply_markup=inline_kb_buy)
         await Client.start_pay.set()
+        return
+    elif current_state == Menu.get_promocode.state:
+        async with state.proxy() as data:
+            msg = types.Message.to_object(data['Main_message'])
+            if data['menu_buy_type'] == 0:
+                await msg.edit_text(f'Вы выбрали подписку на месяц. Цена составит {PRICE_MONTH.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+                await Menu.buy_month.set()
+            else:
+                await msg.edit_text(f'Вы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+                await Menu.buy_year.set()
         return
     else:
         return
@@ -1007,14 +1017,16 @@ async def menu_enter_promocode(callback_query : types.CallbackQuery, state : FSM
 async def menu_check_promo(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         data['Promo'] = await sqlite_db.check_promo(message)
+        await message.delete()
         if data['Promo'] == 0:
             msg = types.Message.to_object(data['Main_message'])
-            await msg.edit_text('Промокод недействительный')
-            msg = await bot.send_message(message.from_user.id, 'Оплата подписки', reply_markup=inline_kb_menu_buy)
-            data['Main_message'] = msg.to_python()
-            await Menu.start_pay.set()
+            if data['menu_buy_type'] == 0:
+                await msg.edit_text(f'Введённый промокод закончился или не найден!\nВы выбрали подписку на месяц. Цена составит {PRICE_MONTH.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+                await Menu.buy_month.set()
+            else:
+                await msg.edit_text(f'Введённый промокод закончился или не найден!\nВы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+                await Menu.buy_year.set()
             return
-        await message.delete()
         if data['Promo'] == 100:
             await sqlite_db.add_user_paid(message.from_user.id)
             await sqlite_db.add_demo_paid(message.from_user.id)
@@ -1026,7 +1038,11 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
             return
         promo_amount = data['Promo']
         msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_menu_buy)  
+        kb = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyboardButton(text='Оплатить', callback_data='buy')).row(InlineKeyboardButton(text='Назад🔙', callback_data='menu_back'))
+        if data['menu_buy_type'] == 0:
+            await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=kb)
+        else:
+            await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=kb) 
     
 async def menu_buy(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()    
@@ -1125,11 +1141,21 @@ async def menu_buy_month(callback_query : types.CallbackQuery, state : FSMContex
 async def menu_buy_year(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
-        msg = types.Message.to_object(data['Last_message'])
+        msg = types.Message.to_object(data['Main_message'])
         await msg.edit_text(f'Вы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
         data['Main_message'] = msg.to_python()
         data['menu_buy_type'] = 1
     await Menu.buy_year.set()
+
+async def menu_back(callback_query : types.CallbackQuery, state : FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data:
+        msg = types.Message.to_object(data['Main_message'])
+        if data['menu_buy_type'] == 0 :
+            await msg.edit_text(f'Вы выбрали подписку на месяц. Цена составит {PRICE_MONTH.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+        else:
+            await msg.edit_text(f'Вы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+    await Menu.start_pay.set()
 
 def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(next_step, Text(equals='next', ignore_case=True), state='*')
@@ -1267,6 +1293,7 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(buy, Text(equals='buy_now_menu', ignore_case=True), state='*')
     dp.register_callback_query_handler(menu_buy_month, Text(equals='menu_buy_month', ignore_case=True), state='*')
     dp.register_callback_query_handler(menu_buy_year, Text(equals='menu_buy_year', ignore_case=True), state='*')
+    dp.register_callback_query_handler(menu_back, Text(equals='menu_back', ignore_case=True), state='*')
       
     #ask_impress
     dp.register_callback_query_handler(impress_nice, Text(equals='nice', ignore_case=True), state='*')
