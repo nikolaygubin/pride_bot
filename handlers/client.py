@@ -126,9 +126,7 @@ async def back(callback_query : types.CallbackQuery, state : FSMContext):
                 await Client.buy_month.set()
             else:
                 await msg.edit_text('Вы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
-                await Client.buy_year.set()
-            # msg = await bot.send_message(callback_query.from_user.id, ABOUT_SUB, reply_markup=inline_kb_buy) 
-            # data['Last_message'] = msg.to_python()      
+                await Client.buy_year.set()     
             return
     elif current_state == Client.buy_month.state or current_state == Client.buy_year.state:
         async with state.proxy() as data:
@@ -586,8 +584,6 @@ async def check_promo(message : types.Message, state : FSMContext):
             msg = await message.answer(ABOUT_SUB, reply_markup=inline_kb_buy)     
             data['Last_message']  = msg.to_python()
             return
-        # msg = types.Message.to_object(data['Last_message'])
-        # await msg.delete()
         await message.delete()
         if data['Promo'] == 100:
             await message.answer(ABOUT_UNIC_PROMO)
@@ -610,8 +606,7 @@ async def buy_later(callbck_query : types.CallbackQuery, state : FSMContext):
     await callbck_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_reply_markup(None)
-        msg = await bot.send_message(callbck_query.from_user.id, MENU, reply_markup=inline_kb_menu)
+        await msg.edit_text(callbck_query.from_user.id, MENU, reply_markup=inline_kb_menu)
         data['Main_message'] = msg.to_python()
     await Menu.menu.set()
     
@@ -619,8 +614,7 @@ async def buy_month(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_reply_markup(None)
-        msg = await bot.send_message(callback_query.from_user.id, 'Вы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+        await msg.edit_text(callback_query.from_user.id, 'Вы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
         data['Last_message'] = msg.to_python()
         data['buy_type'] = 0
     await Client.buy_month.set()
@@ -1187,10 +1181,8 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(fill_again, Text(equals='fill_again', ignore_case=True), state='*')
 
     # payment
-    dp.register_message_handler(check_promo, state=Client.promo_month)
-    dp.register_message_handler(check_promo, state=Client.promo_year)
-    # dp.register_callback_query_handler(enter_promo_month, Text(equals='promocode', ignore_case=True), state='*')
-    # dp.register_callback_query_handler(enter_promo_year, Text(equals='promocode', ignore_case=True), state='*')
+    dp.register_message_handler(check_promo, state=Client.get_promocode)
+    dp.register_callback_query_handler(enter_promocode, Text(equals='promocode', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_month, Text(equals='buy_month', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_year, Text(equals='buy_year', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_later, Text(equals='buy_later', ignore_case=True), state='*')
