@@ -730,7 +730,8 @@ async def get_new_buddy(callback_query : types.CallbackQuery, state : FSMContext
             await msg.edit_text("Вы успешно занесены в очередь на дополнительную пару✅", reply_markup=inline_kb_back_menu)
         else:
             msg = types.Message.to_object(data['Main_message'])
-            await msg.edit_text("У вас уже есть 2 собеседника на эту неделю...\nВ воскресенье в 14:00 мск вам автоматически подберётся новая пара\n", reply_markup=inline_kb_back_menu)
+            await msg.edit_text("У вас уже есть 2 собеседника на эту неделю или истекло время для дополнительной пары - допольнительную пару можно получить только с \
+понедельника по среду\nВ воскресенье в 14:00 мск вам автоматически подберётся новая пара\n", reply_markup=inline_kb_back_menu)
     await Menu.next()
     
 async def get_history(callback_query : types.CallbackQuery, state : FSMContext):

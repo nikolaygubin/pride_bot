@@ -420,8 +420,8 @@ async def find_id_from_tg(tg):
     return cursor.fetchone()[0]
         
 async def try_make_pair(id):  
-    if datetime.datetime.today().weekday() > 3 :
-        return 
+    if datetime.datetime.today().weekday() > 2 :
+        return False
     cursor.execute("SELECT last_pairs FROM users WHERE id = %s", (id, ))
     last_pairs = cursor.fetchone()[0]
     if len(last_pairs) < 2:
