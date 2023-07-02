@@ -614,7 +614,7 @@ async def buy_month(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text(callback_query.from_user.id, 'Вы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+        await msg.edit_text('Вы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
         data['Last_message'] = msg.to_python()
         data['buy_type'] = 0
     await Client.buy_month.set()
@@ -624,7 +624,7 @@ async def buy_year(callback_query : types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
         await msg.edit_reply_markup(None)
-        msg = await bot.send_message(callback_query.from_user.id, 'Вы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+        msg = await bot.send_message('Вы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
         data['Last_message'] = msg.to_python()
         data['buy_type'] = 1
     await Client.buy_year.set()
