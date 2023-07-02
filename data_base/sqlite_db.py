@@ -49,10 +49,10 @@ async def check_promo(message : types.Message):
     cursor.execute('SELECT * FROM promo WHERE code = %s', (message.text, ))
     promo = cursor.fetchone()
     if promo == None:
-        await message.answer('Введённый промокод не найден!')  
+        # await message.answer('Введённый промокод не найден!')  
         return 0
     if promo[2] < 1:
-        await message.answer('Введённый промокод закончился!')
+        # await message.answer('Введённый промокод закончился!')
         cursor.execute('DELETE FROM promo WHERE code = %s', (promo[0], ))
         base.commit()
         return 0

@@ -577,14 +577,14 @@ async def enter_promocode(callback_query : types.CallbackQuery, state : FSMConte
 async def check_promo(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         data['Promo'] = await sqlite_db.check_promo(message)
+        await message.delete()
         if data['Promo'] == 0:
             msg = types.Message.to_object(data['Last_message'])
             if data['buy_type'] == 0:
-                await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_buy_only)
+                await msg.edit_text('Введённый промокод закончился или не найден!\nВы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
             else:
-                await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_YEAR.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_buy_only)
+                await msg.edit_text('Введённый промокод закончился или не найден!\nВы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
             return
-        await message.delete()
         if data['Promo'] == 100:
             await message.answer(ABOUT_UNIC_PROMO)
             await sqlite_db.add_user_paid(message.from_user.id)
@@ -597,9 +597,9 @@ async def check_promo(message : types.Message, state : FSMContext):
         promo_amount = data['Promo']
         msg = types.Message.to_object(data['Last_message'])
         if data['buy_type'] == 0:
-            await msg.edit_text('Вы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+            await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_buy_only)
         else:
-            await msg.edit_text('Вы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+            await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_YEAR.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_buy_only)
     await Client.next()
     
 async def buy_later(callbck_query : types.CallbackQuery, state : FSMContext):
