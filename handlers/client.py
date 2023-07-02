@@ -1184,6 +1184,7 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_message_handler(check_promo, state=Client.get_promocode)
     dp.register_callback_query_handler(enter_promocode, Text(equals='promocode', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy, Text(equals='buy', ignore_case=True), state='*')
+    dp.register_callback_query_handler(buy, Text(equals='buy_now', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_month, Text(equals='buy_month', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_year, Text(equals='buy_year', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_later, Text(equals='buy_later', ignore_case=True), state='*')
