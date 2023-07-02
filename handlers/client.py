@@ -70,7 +70,7 @@ async def back(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     current_state = await state.get_state()
     async with state.proxy() as data:
-        if current_state != Client.buy_month.state and current_state != Client.buy_year.state and current_state != Client.get_promocode.state and current_state != Menu.get_promocode.state:
+        if current_state != Client.buy_month.state and current_state != Client.buy_year.state and current_state != Client.get_promocode.state:
             msg : types.Message = types.Message.to_object(data['Last_message'])
             await msg.edit_reply_markup(None)
             await msg.delete()
@@ -133,15 +133,6 @@ async def back(callback_query : types.CallbackQuery, state : FSMContext):
             await msg.edit_text(ABOUT_SUB, reply_markup=inline_kb_buy)
         await Client.start_pay.set()
         return
-    elif current_state == Menu.get_promocode.state:
-        async with state.proxy() as data:
-            msg = types.Message.to_object(data['Main_message'])
-            if data['menu_buy_type'] == 0:
-                await msg.edit_text(f'Вы выбрали подписку на месяц. Цена составит {PRICE_MONTH.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
-                await Menu.buy_month.set()
-            else:
-                await msg.edit_text(f'Вы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
-                await Menu.buy_year.set()
         return
     else:
         return
@@ -992,6 +983,17 @@ async def set_change_photo(message : types.Message, state : FSMContext):
     
 async def back_change(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
+    cur_state = await state.get_state()
+    if cur_state == Menu.get_promocode.state:
+        async with state.proxy() as data:
+            msg = types.Message.to_object(data['Main_message'])
+            if data['menu_buy_type'] == 0:
+                await msg.edit_text(f'Вы выбрали подписку на месяц. Цена составит {PRICE_MONTH.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+                await Menu.buy_month.set()
+            else:
+                await msg.edit_text(f'Вы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+                await Menu.buy_year.set()
+        return
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Main_message'])
         await msg.edit_text(SUCCSES_CHANGE, reply_markup=kb_menuchange) 
