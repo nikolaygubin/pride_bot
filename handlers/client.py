@@ -1042,7 +1042,7 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
         if data['menu_buy_type'] == 0:
             await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=kb)
         else:
-            await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=kb) 
+            await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_YEAR.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=kb) 
     
 async def menu_buy(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
