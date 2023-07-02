@@ -63,7 +63,7 @@ async def check_promo(message : types.Message):
     
     cursor.execute('UPDATE promo SET count = %s, active_id = array_append(active_id, %s) WHERE code = %s', (promo[2] - 1, message.from_user.id, promo[0]))
     base.commit()
-    await message.answer(f'Размер скидки введённого промокода равен {promo[1]}%!')
+    # await message.answer(f'Размер скидки введённого промокода равен {promo[1]}%!')
     return promo[1]
 
 async def insert_promo(message : types.Message):
