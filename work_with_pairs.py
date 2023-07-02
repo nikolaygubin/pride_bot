@@ -156,10 +156,10 @@ async def make_extra_pairs():
             dict_pairs[users[id]] = users[max_index]
             await sqlite_db.append_pair(users[id], users[max_index])
     for key, value in dict_pairs.items():
+        await send_invoice_message(key, value, 'Поздравляем! Вам нашлась дополнительная пара, советуем написать сразу, приятного общения🤝\n')
+        await send_invoice_message(value, key, 'Поздравляем! Вам нашлась дополнительная пара, советуем написать сразу, приятного общения🤝\n')
         await sqlite_db.delete_from_temp_users(key)
         await sqlite_db.delete_from_temp_users(value)
-        await send_invoice_message(key, value)
-        await send_invoice_message(value, key)
     
     return len(dict_pairs)
     
