@@ -1045,22 +1045,34 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
             await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=kb) 
     
 async def menu_buy(callback_query : types.CallbackQuery, state : FSMContext):
-    await callback_query.answer()    
+    await callback_query.answer()
     promo_amount = str()
     async with state.proxy() as data:
-        msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_reply_markup(None)
         promo_amount = data['Promo']
-    price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE_MONTH.amount * (1 - int(promo_amount) / 100)))
-    await bot.send_invoice(callback_query.from_user.id,
-                           title='Подписка на месяц',
-                           description='Активация подписки!',
-                           provider_token=PAYMENT_TOKEN,
-                           currency='rub',
-                           is_flexible=False,
-                           prices=[price],
-                           start_parameter='one-month-sub',
-                           payload='test-invoice-payload')
+        msg = types.Message.to_object(data['Last_message'])
+        await msg.delete_reply_markup()   
+        if data['menu_buy_type'] == 0:
+            price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE_MONTH.amount * (1 - int(promo_amount) / 100)))
+            await bot.send_invoice(callback_query.from_user.id,
+                                   title='Подписка на месяц',
+                                   description='Активация подписки!',
+                                   provider_token=PAYMENT_TOKEN,
+                                   currency='rub',
+                                   is_flexible=False,
+                                   prices=[price],
+                                   start_parameter='one-month-sub',
+                                   payload='test-invoice-payload')
+        else:
+            price = types.LabeledPrice(label='Подписка на год', amount = int(PRICE_YEAR.amount * (1 - int(promo_amount) / 100)))
+            await bot.send_invoice(callback_query.from_user.id,
+                                   title='Подписка на год',
+                                   description='Активация подписки!',
+                                   provider_token=PAYMENT_TOKEN,
+                                   currency='rub',
+                                   is_flexible=False,
+                                   prices=[price],
+                                   start_parameter='one-month-sub',
+                                   payload='test-invoice-payload')
                     
 async def impress_nice(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
@@ -1304,8 +1316,8 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_message_handler(menu_check_promo, state=Menu.get_promocode)
     dp.register_callback_query_handler(menu_buy, Text(equals='menu_buy', ignore_case=True), state='*')
     
-    dp.register_callback_query_handler(buy, Text(equals='buy', ignore_case=True), state='*')
-    dp.register_callback_query_handler(buy, Text(equals='buy_now_menu', ignore_case=True), state='*')
+    dp.register_callback_query_handler(menu_buy, Text(equals='buy', ignore_case=True), state='*')
+    dp.register_callback_query_handler(menu_buy, Text(equals='buy_now_menu', ignore_case=True), state='*')
     dp.register_callback_query_handler(menu_buy_month, Text(equals='menu_buy_month', ignore_case=True), state='*')
     dp.register_callback_query_handler(menu_buy_year, Text(equals='menu_buy_year', ignore_case=True), state='*')
     dp.register_callback_query_handler(menu_back, Text(equals='menu_back', ignore_case=True), state='*')
