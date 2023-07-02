@@ -727,7 +727,7 @@ async def get_new_buddy(callback_query : types.CallbackQuery, state : FSMContext
             await msg.edit_text("Вы не можете получить дополнительного собеседника, пока не оплатите подписку!", reply_markup=inline_kb_back_menu)
         elif await sqlite_db.try_make_pair(callback_query.from_user.id):
             msg = types.Message.to_object(data['Main_message'])
-            await msg.edit_text("Вы успешно занесены в очередь на дополнительную пару✅\nС понедельника по четверг раз в день в 14:00 по мск мы будем пытаться подобрать вам собеседника, пока он не найдётся", reply_markup=inline_kb_back_menu)
+            await msg.edit_text("Вы успешно занесены в очередь на дополнительную пару✅", reply_markup=inline_kb_back_menu)
         else:
             msg = types.Message.to_object(data['Main_message'])
             await msg.edit_text("У вас уже есть 2 собеседника на эту неделю...\nВ воскресенье в 14:00 мск вам автоматически подберётся новая пара\n", reply_markup=inline_kb_back_menu)

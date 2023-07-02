@@ -306,86 +306,20 @@ async def is_last_pair(id, pair_id):
         return False
     
 async def find_users_without_pair():
-    cursor.execute('SELECT id, online FROM users WHERE array_upper(last_pairs, 1) is null and active = true')
+    cursor.execute('SELECT id, name online FROM users WHERE array_upper(last_pairs, 1) is null and active = true')
     users = cursor.fetchall()
     if users == None:
         return
     
-    cursor.execute('SELECT id FROM users WHERE array_upper(last_pairs, 1) is not null and active = true and online = true')
-    online_users = cursor.fetchall()
-    cursor.execute('SELECT id, town FROM users WHERE array_upper(last_pairs, 1) is not null and active = true and online = false')
-    offline_users = cursor.fetchall()  
-    
-    await dp.bot.send_message(555581588, f'{len(online_users)} ---- {len(offline_users)}')
-    
     for user in users:
         try:
-            await bot.send_message(user[0], 'К сожалению на этой неделе вам не удалось подобрать пару сразу\nМы занесём вас в дополнительный список, и каждый день будем пытаться подобрать пару снова!')
+            await bot.send_message(user[0], f'Здраствуйте, уважаемый {user[1]}! Команда PRIDE_CONNECT приносит извенения, так как мы не смогли подобрать вам пару в связи с тем, \
+что на этой неделе нечётное количество пользователей. Но не спешите расстраиваться, мы автоматически занесём вас в список на дополнительную пару.\n\n\
+Также мы добавили вам неделю подписки.')
+            await try_make_pair(user[0])
+            await add_one_week(user[0])
         except:
             print('Я в блоке')
-    
-    dict_pairs = dict(str()) # словарь со всеми парами
-
-    offline_dict = {} # инициализируем словарь и заносим туда всех оффлайн пользователей по городам
-    for user in offline_users: 
-        town = user[1].lower()
-        if offline_dict.get(town) == None:
-            offline_dict[town] = list()
-        offline_dict[town].append(user[0])
-        
-    for town in offline_dict.keys(): # проходимся по всем городам и пытаемся сформировать пары
-        town_id = list(offline_dict[town]) # иницализируем массив с пользователями в городе town
-        for id in range(len(town_id)): # пытаемся подобрать пару каждому пользователю
-            max_sim = -1    # максимальная схожесть
-            max_index = id  # индекс с максимальной схожестью (по умолчанию ссылается на самого себя)
-            for pair_id in range(len(town_id)):
-                if town_id[id] in dict_pairs.values():
-                    break
-                if id == pair_id or town_id[pair_id] in dict_pairs.keys() or town_id[pair_id] in dict_pairs.values() or await is_last_pair(town_id[id], town_id[pair_id]):
-                    continue   
-                s1 = await get_hooks(town_id[id])
-                s2 = await get_hooks(town_id[pair_id])
-                sim = similarity(s1, s2) # процент схожести 2 строк 
-                if sim > max_sim:
-                    max_index = pair_id
-                    max_sim = sim
-            if max_index != id:
-                dict_pairs[town_id[id]] = town_id[max_index]
-                await send_maybe_pair(town_id[id], town_id[max_index], 'Мы нашли максимально подходящую вам дополнительную оффлайн пару, не хотите ли встретиться 2 раза на этой неделе?\n')
-                # await sqlite_db.append_pair(town_id[id], town_id[max_index]) # добавляем пары в базу данных
-                offline_dict[town].remove(town_id[id])
-                offline_dict[town].remove(town_id[max_index])
-    offline_size = len(dict_pairs)
-    online_id = list() # создаём список и добавляем туда все онлайн id
-    for town in offline_dict.keys():
-        users = offline_dict[town]
-        for user in users:
-            online_id.append(user)
-    for user in online_users:
-        online_id.append(user[0])
-        
-    await dp.bot.send_message(555581588, f'{len(online_id)}')
-        
-    for id in range(len(online_id)):
-        max_sim = -1
-        max_index = id
-        for pair_id in range(len(online_id)):
-            if online_id[id] in dict_pairs.values():
-                break
-            if id == pair_id or online_id[pair_id] in dict_pairs.keys() or online_id[pair_id] in dict_pairs.values() or await is_last_pair(online_id[id], online_id[pair_id]):
-                await dp.bot.send_message(555581588, 'континию')
-                continue     
-            s1 = await get_hooks(online_id[id])
-            s2 = await get_hooks(online_id[pair_id])
-            sim = similarity(s1, s2)
-            if sim > max_sim:
-                max_index = pair_id
-                max_sim = sim
-        if max_index != id:
-            await dp.bot.send_message(555581588, 'есть контакт')
-            dict_pairs[online_id[id]] = online_id[max_index]
-            # await sqlite_db.append_pair(online_id[id], online_id[max_index])
-            await send_maybe_pair(online_id[id], online_id[max_index], 'Мы нашли максимально подходящую вам дополнительную онлайн пару, не хотите ли встретиться 2 раза на этой неделе?\n')
 
 
 async def make_impress(user_id, pair_id, num_impress):
@@ -497,6 +431,7 @@ async def try_make_pair(id):
         if id not in users:
             cursor.execute('INSERT INTO temp_users VALUES(%s)', (id, ))
             base.commit()
+        await make_extra_pairs()
         return True
     else:
         return False
@@ -620,3 +555,20 @@ async def send_maybe_pair(user_id, send_id, text):
         await dp.bot.send_photo(send_id, photo=await get_photo(user_id), caption=card, reply_markup=inline_keyboard)
     except:
         print('Я в блоке')
+        
+async def add_one_week(id):
+    try:
+        cursor.execute('SELECT * FROM users WHERE id = %s', (id, ))
+        user = cursor.fetchone()
+        
+        mas_date = user[15].split('-')
+        date = datetime.date(int(mas_date[2]), int(mas_date[1]), int(mas_date[0]))
+        date += datetime.timedelta(days=7)
+        str_date = str(date.day) + '-' + str(date.month) + '-' + str(date.year)
+
+        cursor.execute('UPDATE users SET is_sub_active = %s, date_out_active = %s WHERE id = %s', (True, str_date, id))
+        base.commit()
+        await bot.send_message(id, 'Данные об оплате успешно записаны!')
+    except Exception as ex:
+        print(ex)
+        await bot.send_message(id, 'Не удалось записать данные об оплате!')
