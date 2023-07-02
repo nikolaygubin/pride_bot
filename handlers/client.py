@@ -670,6 +670,8 @@ async def buy(callback_query : types.CallbackQuery, state : FSMContext):
                                        start_parameter='one-month-sub',
                                        payload='test-invoice-payload')
         except:
+            msg = types.Message.to_object(data['Main_message'])
+            await msg.delete_reply_markup() 
             if data['menu_buy_type'] == 0:
                 price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE_MONTH.amount * (1 - int(promo_amount) / 100)))
                 await bot.send_invoice(callback_query.from_user.id,
@@ -700,12 +702,20 @@ async def pre_checkout_query(pre_checkout_q : types.PreCheckoutQuery):
     
 async def successful_payment(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
-        if data['buy_type'] == 0:
-            await message.answer(f'Оплата на сумму {message.successful_payment.total_amount // 100} {message.successful_payment.currency} прошла успешно!✅\nВам добавлен месяц подписки на Pride Community!')    
-            await sqlite_db.add_user_paid(message.from_user.id)
-        else:
-            await message.answer(f'Оплата на сумму {message.successful_payment.total_amount // 100} {message.successful_payment.currency} прошла успешно!✅\nВам добавлен год подписки на Pride Community!')    
-            await sqlite_db.add_user_paid_year(message.from_user.id)
+        try:
+            if data['buy_type'] == 0:
+                await message.answer(f'Оплата на сумму {message.successful_payment.total_amount // 100} {message.successful_payment.currency} прошла успешно!✅\nВам добавлен месяц подписки на Pride Community!')    
+                await sqlite_db.add_user_paid(message.from_user.id)
+            else:
+                await message.answer(f'Оплата на сумму {message.successful_payment.total_amount // 100} {message.successful_payment.currency} прошла успешно!✅\nВам добавлен год подписки на Pride Community!')    
+                await sqlite_db.add_user_paid_year(message.from_user.id)
+        except:
+            if data['menu_buy_type'] == 0:
+                await message.answer(f'Оплата на сумму {message.successful_payment.total_amount // 100} {message.successful_payment.currency} прошла успешно!✅\nВам добавлен месяц подписки на Pride Community!')    
+                await sqlite_db.add_user_paid(message.from_user.id)
+            else:
+                await message.answer(f'Оплата на сумму {message.successful_payment.total_amount // 100} {message.successful_payment.currency} прошла успешно!✅\nВам добавлен год подписки на Pride Community!')    
+                await sqlite_db.add_user_paid_year(message.from_user.id)
     await sqlite_db.remove_demo_user(message.from_user.id)
     await state.finish()
     async with state.proxy() as data:
