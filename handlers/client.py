@@ -71,7 +71,7 @@ async def back(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     current_state = await state.get_state()
     async with state.proxy() as data:
-        if current_state != Client.buy_month.state and current_state != Client.buy_year.state:
+        if current_state != Client.buy_month.state and current_state != Client.buy_year.state and current_state != Client.get_promocode.state :
             msg : types.Message = types.Message.to_object(data['Last_message'])
             await msg.edit_reply_markup(None)
             await msg.delete()
