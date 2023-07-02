@@ -1049,7 +1049,7 @@ async def menu_buy(callback_query : types.CallbackQuery, state : FSMContext):
     promo_amount = str()
     async with state.proxy() as data:
         promo_amount = data['Promo']
-        msg = types.Message.to_object(data['Last_message'])
+        msg = types.Message.to_object(data['Main_message'])
         await msg.delete_reply_markup()   
         if data['menu_buy_type'] == 0:
             price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE_MONTH.amount * (1 - int(promo_amount) / 100)))
