@@ -811,7 +811,7 @@ async def back_main(callback_query : types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Main_message'])
         await msg.edit_text(MENU, reply_markup=inline_kb_menu)
-    await Menu.previous()                     
+    await Menu.menu.set()                     
     
 async def change_name(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
@@ -1264,9 +1264,9 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(menu_buy, Text(equals='menu_buy', ignore_case=True), state='*')
     
     dp.register_callback_query_handler(buy, Text(equals='buy', ignore_case=True), state='*')
-    dp.register_callback_query_handler(buy, Text(equals='buy_now', ignore_case=True), state='*')
-    dp.register_callback_query_handler(menu_buy_month, Text(equals='buy_month', ignore_case=True), state='*')
-    dp.register_callback_query_handler(menu_buy_year, Text(equals='buy_year', ignore_case=True), state='*')
+    dp.register_callback_query_handler(buy, Text(equals='buy_now_menu', ignore_case=True), state='*')
+    dp.register_callback_query_handler(menu_buy_month, Text(equals='menu_buy_month', ignore_case=True), state='*')
+    dp.register_callback_query_handler(menu_buy_year, Text(equals='menu_buy_year', ignore_case=True), state='*')
       
     #ask_impress
     dp.register_callback_query_handler(impress_nice, Text(equals='nice', ignore_case=True), state='*')
