@@ -35,11 +35,25 @@ InlineKeyboardButton(text='Онлайн', callback_data='online')).row(inl_butto
 inline_kb_verify = InlineKeyboardMarkup(resize_keyboard=True).row(inl_button2).row(inl_button3)
 inline_kb_succses = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Понятно, дальше ⏩', callback_data='succses')).row(inl_button3)
 
-inline_kb_buy = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Оплатить💵', callback_data='buy'),\
-                InlineKeyboardButton(text='Есть промокод🌟', callback_data='promocode')).row(InlineKeyboardButton(text='Оплатить позднее🔜', callback_data='buy_later'))
+promo_button = InlineKeyboardButton(text='Есть промокод🌟', callback_data='promocode')
 
-inline_kb_menu_buy = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Оплатить💵', callback_data='menu_buy'),\
-                InlineKeyboardButton(text='Есть промокод🌟', callback_data='menu_promocode')).add(InlineKeyboardButton(text='Назад🔙', callback_data='back_main'))
+menu_promo_button = InlineKeyboardButton(text='Есть промокод🌟', callback_data='menu_promocode')
+
+inline_kb_buy = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Оплатить месяц💵', callback_data='buy_month'))\
+                                                          .row(InlineKeyboardButton(text='Оплатить год💵', callback_data='buy_year'))\
+                                                          .row(InlineKeyboardButton(text='Оплатить позднее🔜', callback_data='buy_later'))
+                                                          
+inline_promo = InlineKeyboardMarkup(resize_keyboard=True).row(promo_button)\
+                                                         .row(InlineKeyboardButton(text='Оплатить сразу', callback_data='buy_now'))\
+                                                         .row(inl_button1)
+
+inline_kb_menu_buy = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Оплатить месяц💵', callback_data='menu_buy_month'))\
+                                                               .row(InlineKeyboardButton(text='Оплатить год💵', callback_data='menu_buy_year'))\
+                                                               .row(InlineKeyboardButton(text='Назад🔙', callback_data='back_main'))
+
+inline_menu_promo = InlineKeyboardMarkup(resize_keyboard=True).row(menu_promo_button)\
+                                                         .row(InlineKeyboardButton(text='Оплатить сразу', callback_data='buy_now_menu'))\
+                                                         .row(inl_button1)
 
 
 inline_kb_buy_only = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyboardButton(text='Оплатить', callback_data='buy'))\

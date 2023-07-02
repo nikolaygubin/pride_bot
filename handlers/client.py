@@ -8,7 +8,7 @@ from data_base import sqlite_db
 from keyboards import kb_client, inline_kb_quest, inline_kb_succses, inline_kb_go, inline_kb_buy, inline_kb_buy_only,\
                       inline_kb_menu, inline_kb_back_menu, kb_menuchange, inline_kb_menu_buy, inline_kb_quest_format, inline_kb_change_format,\
                       inline_kb_quest_social, inline_kb_expect, thx_next, accept_photo, kb_purpose, kb_gender, kb_username, kb_back_change, kb_history,\
-                      kb_only_prev, kb_only_next
+                      kb_only_prev, kb_only_next, inline_promo, inline_menu_promo
 from aiogram.types.message import ContentType
 from text import *
 from work_with_pairs import similarity
@@ -18,7 +18,8 @@ import datetime
 import validators
 
 PAYMENT_TOKEN = os.getenv('PAYMENT_TOKEN')
-PRICE = types.LabeledPrice(label='Подписка на 1 месяц', amount=100*500)
+PRICE_MONTH = types.LabeledPrice(label='Подписка на 1 месяц', amount=100*500)
+PRICE_YEAR = types.LabeledPrice(label='Подписка на 1 год', amount=100*5000)
 
 TOWNS = ['Абаза', 'Абакан', 'Абдулино', 'Абинск', 'Агидель', 'Агрыз', 'Адыгейск', 'Азнакаево', 'Азов', 'Ак-Довурак', 'Аксай', 'Алагир', 'Алапаевск', 'Алатырь', 'Алдан', 'Алейск', 'Александров', 'Александровск-Сахалинский', 'Александровск', 'Алексеевка', 'Алексин', 'Алзамай', 'Алупка', 'Алушта', 'Альметьевск', 'Амурск', 'Анадырь', 'Анапа', 'Ангарск', 'Андреаполь', 'Анжеро-Судженск', 'Анива', 'Апатиты', 'Апрелевка', 'Апшеронск', 'Арамиль', 'Аргун', 'Ардатов', 'Ардон', 'Арзамас', 'Аркадак', 'Армавир', 'Армянск', 'Арсеньев', 'Арск', 'Артём', 'Артёмовск', 'Артёмовский', 'Архангельск', 'Асбест', 'Асино', 'Астрахань', 'Аткарск', 'Ахтубинск', 'Ачинск', 'Аша', 'Бабаево', 'Бабушкин', 'Бавлы', 'Багратионовск', 'Байкальск', 'Баймак', 'Бакал', 'Баксан', 'Балабаново', 'Балаклава', 'Балаково', 'Балахна', 'Балашиха', 'Балашов', 'Балей', 'Балтийск', 'Барабинск', 'Барнаул', 'Барыш', 'Батайск', 'Бахчисарай', 'Бежецк', 'Белая Калитва', 'Белая Холуница', 'Белгород', 'Белебей', 'Белинский', 'Белово', 'Белогорск', 'Белогорск', 'Белозерск', 'Белокуриха', 'Беломорск', 'Белоозёрский', 'Белорецк', 'Белореченск', 'Белоусово', 'Белоярский', 'Белый', 'Белёв', 'Бердск', 'Березники', 'Берёзовский', 'Берёзовский', 'Беслан', 'Бийск', 'Бикин', 'Билибино', 'Биробиджан', 'Бирск', 'Бирюсинск', 'Бирюч', 'Благовещенск', 'Благовещенск', 'Благодарный', 'Бобров', 'Богданович', 'Богородицк', 'Богородск', 'Боготол', 'Богучар', 'Бодайбо', 'Бокситогорск', 'Болгар', 'Бологое', 'Болотное', 'Болохово', 'Болхов', 'Большой Камень', 'Бор', 'Борзя', 'Борисоглебск', 'Боровичи', 'Боровск', 'Бородино', 'Братск', 'Бронницы', 'Брянск', 'Бугульма', 'Бугуруслан', 'Будённовск', 'Бузулук', 'Буинск', 'Буй', 'Буйнакск', 'Бутурлиновка', 'Валдай', 'Валуйки', 'Велиж', 'Великие Луки', 'Великий Новгород', 'Великий Устюг', 'Вельск', 'Венёв', 'Верещагино', 'Верея', 'Верхнеуральск', 'Верхний Тагил', 'Верхний Уфалей', 'Верхняя Пышма', 'Верхняя Салда', 'Верхняя Тура', 'Верхотурье', 'Верхоянск', 'Весьегонск', 'Ветлуга', 'Видное', 'Вилюйск', 'Вилючинск', 'Вихоревка', 'Вичуга', 'Владивосток', 'Владикавказ', 'Владимир', 'Волгоград', 'Волгодонск', 'Волгореченск', 'Волжск', 'Волжский', 'Вологда', 'Володарск', 'Волоколамск', 'Волосово', 'Волхов', 'Волчанск', 'Вольск', 'Воркута', 'Воронеж', 'Ворсма', 'Воскресенск', 'Воткинск', 'Всеволожск', 'Вуктыл', 'Выборг', 'Выкса', 'Высоковск', 'Высоцк', 'Вытегра', 'Вышний Волочёк', 'Вяземский', 'Вязники', 'Вязьма', 'Вятские Поляны', 'Гаврилов Посад', 'Гаврилов-Ям', 'Гагарин', 'Гаджиево', 'Гай', 'Галич', 'Гатчина', 'Гвардейск', 'Гдов', 'Геленджик', 'Георгиевск', 'Глазов', 'Голицыно', 'Горбатов', 'Горно-Алтайск', 'Горнозаводск', 'Горняк', 'Городец', 'Городище', 'Городовиковск', 'Гороховец', 'Горячий Ключ', 'Грайворон', 'Гремячинск', 'Грозный', 'Грязи', 'Грязовец', 'Губаха', 'Губкин', 'Губкинский', 'Гудермес', 'Гуково', 'Гулькевичи', 'Гурьевск', 'Гурьевск', 'Гусев', 'Гусиноозёрск', 'Гусь-Хрустальный', 'Давлеканово', 'Дагестанские Огни', 'Далматово', 'Дальнегорск', 'Дальнереченск', 'Данилов', 'Данков', 'Дегтярск', 'Дедовск', 'Демидов', 'Дербент', 'Десногорск', 'Джанкой', 'Дзержинск', 'Дзержинский', 'Дивногорск', 'Дигора', 'Димитровград', 'Дмитриев', 'Дмитров', 'Дмитровск', 'Дно', 'Добрянка', 'Долгопрудный', 'Долинск', 'Домодедово', 'Донецк', 'Донской', 'Дорогобуж', 'Дрезна', 'Дубна', 'Дубовка', 'Дудинка', 'Духовщина', 'Дюртюли', 'Дятьково', 'Евпатория', 'Егорьевск', 'Ейск', 'Екатеринбург', 'Елабуга', 'Елец', 'Елизово', 'Ельня', 'Еманжелинск', 
 'Емва', 'Енисейск', 'Ермолино', 'Ершов', 'Ессентуки', 'Ефремов', 'Железноводск', 'Железногорск-Илимский', 'Железногорск', 'Железногорск', 'Жердевка', 'Жигулёвск', 'Жиздра', 'Жирновск', 'Жуков', 'Жуковка', 'Жуковский', 'Завитинск', 'Заводоуковск', 'Заволжск', 'Заволжье', 'Задонск', 'Заинск', 'Закаменск', 'Заозёрный', 'Заозёрск', 'Западная Двина', 'Заполярный', 'Зарайск', 'Заречный', 'Заречный', 'Заринск', 'Звенигово', 'Звенигород', 'Зверево', 'Зеленогорск', 'Зеленогорск', 'Зеленоград', 'Зеленоградск', 'Зеленодольск', 'Зеленокумск', 'Зерноград', 'Зея', 'Зима', 'Златоуст', 'Злынка', 'Змеиногорск', 'Знаменск', 'Зубцов', 'Зуевка', 'Ивангород', 'Иваново', 'Ивантеевка', 'Ивдель', 'Игарка', 'Ижевск', 'Избербаш', 'Изобильный', 'Иланский', 'Инза', 'Инкерман', 'Иннополис', 'Инсар', 'Инта', 'Ипатово', 'Ирбит', 'Иркутск', 'Исилькуль', 'Искитим', 'Истра', 'Ишим', 'Ишимбай', 'Йошкар-Ола', 'Кадников', 'Казань', 'Калач-на-Дону', 'Калач', 'Калачинск', 'Калининград', 'Калининск', 'Калтан', 'Калуга', 'Калязин', 'Камбарка', 'Каменка', 'Каменногорск', 'Каменск-Уральский', 'Каменск-Шахтинский', 'Камень-на-Оби', 'Камешково', 'Камызяк', 'Камышин', 'Камышлов', 'Канаш', 'Кандалакша', 'Канск', 'Карабаново', 'Карабаш', 'Карабулак', 'Карасук', 'Карачаевск', 'Карачев', 'Каргат', 'Каргополь', 'Карпинск', 'Карталы', 'Касимов', 'Касли', 'Каспийск', 'Катав-Ивановск', 'Катайск', 'Качканар', 'Кашин', 'Кашира', 'Кедровый', 'Кемерово', 
@@ -47,6 +48,10 @@ class Client(StatesGroup):
     email = State()
      
     start_pay = State()
+    buy_month = State()
+    buy_year = State()
+    promo_month = State()
+    promo_year = State()
     get_promocode = State()
     
 class Change(StatesGroup):  
@@ -114,9 +119,22 @@ async def back(callback_query : types.CallbackQuery, state : FSMContext):
             data['Last_message'] = msg.to_python()           
     elif current_state == Client.get_promocode.state:
         async with state.proxy() as data:
-            msg = await bot.send_message(callback_query.from_user.id, ABOUT_SUB, reply_markup=inline_kb_buy) 
-            data['Last_message'] = msg.to_python()      
+            msg = types.Message.to_object(data['Last_message'])
+            if data['buy_type'] == 0:
+                await msg.edit_text('Вы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+                await Client.buy_month.set()
+            else:
+                await msg.edit_text('Вы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+                await Client.buy_year.set()
+            # msg = await bot.send_message(callback_query.from_user.id, ABOUT_SUB, reply_markup=inline_kb_buy) 
+            # data['Last_message'] = msg.to_python()      
             return
+    elif current_state == Client.buy_month.state or current_state == Client.buy_year.state:
+        async with state.proxy() as data:
+            msg = types.Message.to_object(data['Last_message'])
+            await msg.edit_text(ABOUT_SUB, reply_markup=inline_kb_buy)
+        await Client.start_pay.set()
+        return
     else:
         return
     await Client.previous()
@@ -531,8 +549,7 @@ async def succses(callback_query : types.CallbackQuery, state : FSMContext):
         try:
             await msg.delete_reply_markup()
         except:
-            pass
-            
+            pass         
     
     user = await sqlite_db.check_paid(callback_query.from_user.id)
     if user[0]:
@@ -568,8 +585,8 @@ async def check_promo(message : types.Message, state : FSMContext):
             msg = await message.answer(ABOUT_SUB, reply_markup=inline_kb_buy)     
             data['Last_message']  = msg.to_python()
             return
-        msg = types.Message.to_object(data['Last_message'])
-        await msg.delete()
+        # msg = types.Message.to_object(data['Last_message'])
+        # await msg.delete()
         await message.delete()
         if data['Promo'] == 100:
             await message.answer(ABOUT_UNIC_PROMO)
@@ -581,8 +598,11 @@ async def check_promo(message : types.Message, state : FSMContext):
             data['Main_message'] = msg.to_python()
             return
         promo_amount = data['Promo']
-        msg = await message.answer(f'С учётом вашего промокода цена составит {PRICE.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_buy_only)
-        data['Last_message'] = msg.to_python()
+        msg = types.Message.to_object(data['Last_message'])
+        if data['buy_type'] == 0:
+            await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_buy_only)
+        else:
+            await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_YEAR.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_buy_only)
     await Client.next()
     
 async def buy_later(callbck_query : types.CallbackQuery, state : FSMContext):
@@ -594,6 +614,25 @@ async def buy_later(callbck_query : types.CallbackQuery, state : FSMContext):
         data['Main_message'] = msg.to_python()
     await Menu.menu.set()
     
+async def buy_month(callback_query : types.CallbackQuery, state : FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data:
+        msg = types.Message.to_object(data['Last_message'])
+        await msg.edit_reply_markup(None)
+        msg = await bot.send_message(callback_query.from_user.id, 'Вы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+        data['Last_message'] = msg.to_python()
+        data['buy_type'] = 0
+    await Client.buy_month.set()
+    
+async def buy_year(callback_query : types.CallbackQuery, state : FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data:
+        msg = types.Message.to_object(data['Last_message'])
+        await msg.edit_reply_markup(None)
+        msg = await bot.send_message(callback_query.from_user.id, 'Вы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+        data['Last_message'] = msg.to_python()
+        data['buy_type'] = 1
+    await Client.buy_year.set()
 
 async def buy(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
@@ -602,16 +641,28 @@ async def buy(callback_query : types.CallbackQuery, state : FSMContext):
         promo_amount = data['Promo']
         msg = types.Message.to_object(data['Last_message'])
         await msg.delete_reply_markup()   
-    price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE.amount * (1 - int(promo_amount) / 100)))
-    await bot.send_invoice(callback_query.from_user.id,
-                           title='Подписка на месяц',
-                           description='Активация подписки!',
-                           provider_token=PAYMENT_TOKEN,
-                           currency='rub',
-                           is_flexible=False,
-                           prices=[price],
-                           start_parameter='one-month-sub',
-                           payload='test-invoice-payload')
+        if data['buy_type'] == 0:
+            price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE_MONTH.amount * (1 - int(promo_amount) / 100)))
+            await bot.send_invoice(callback_query.from_user.id,
+                                   title='Подписка на месяц',
+                                   description='Активация подписки!',
+                                   provider_token=PAYMENT_TOKEN,
+                                   currency='rub',
+                                   is_flexible=False,
+                                   prices=[price],
+                                   start_parameter='one-month-sub',
+                                   payload='test-invoice-payload')
+        else:
+            price = types.LabeledPrice(label='Подписка на год', amount = int(PRICE_YEAR.amount * (1 - int(promo_amount) / 100)))
+            await bot.send_invoice(callback_query.from_user.id,
+                                   title='Подписка на год',
+                                   description='Активация подписки!',
+                                   provider_token=PAYMENT_TOKEN,
+                                   currency='rub',
+                                   is_flexible=False,
+                                   prices=[price],
+                                   start_parameter='one-month-sub',
+                                   payload='test-invoice-payload')
     await state.finish()
         
 async def pre_checkout_query(pre_checkout_q : types.PreCheckoutQuery):
@@ -731,7 +782,7 @@ async def get_new_buddy(callback_query : types.CallbackQuery, state : FSMContext
         else:
             msg = types.Message.to_object(data['Main_message'])
             await msg.edit_text("У вас уже есть 2 собеседника на эту неделю или истекло время для дополнительной пары - допольнительную пару можно получить только с \
-понедельника по среду\nВ воскресенье в 14:00 мск вам автоматически подберётся новая пара\n", reply_markup=inline_kb_back_menu)
+понедельника по среду\nВ понедельник в 10:00 мск вам автоматически подберётся новая пара\n", reply_markup=inline_kb_back_menu)
     await Menu.next()
     
 async def get_history(callback_query : types.CallbackQuery, state : FSMContext):
@@ -988,7 +1039,7 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
             return
         promo_amount = data['Promo']
         msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_menu_buy)  
+        await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_menu_buy)  
     await Menu_buy.next()
     
 async def menu_buy(callback_query : types.CallbackQuery, state : FSMContext):
@@ -998,7 +1049,7 @@ async def menu_buy(callback_query : types.CallbackQuery, state : FSMContext):
         msg = types.Message.to_object(data['Main_message'])
         await msg.edit_reply_markup(None)
         promo_amount = data['Promo']
-    price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE.amount * (1 - int(promo_amount) / 100)))
+    price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE_MONTH.amount * (1 - int(promo_amount) / 100)))
     await bot.send_invoice(callback_query.from_user.id,
                            title='Подписка на месяц',
                            description='Активация подписки!',
@@ -1135,9 +1186,12 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(fill_again, Text(equals='fill_again', ignore_case=True), state='*')
 
     # payment
-    dp.register_message_handler(check_promo, state=Client.get_promocode)
-    dp.register_callback_query_handler(enter_promocode, Text(equals='promocode', ignore_case=True), state='*')
-    dp.register_callback_query_handler(buy, Text(equals='buy', ignore_case=True), state='*')
+    dp.register_message_handler(check_promo, state=Client.promo_month)
+    dp.register_message_handler(check_promo, state=Client.promo_year)
+    # dp.register_callback_query_handler(enter_promo_month, Text(equals='promocode', ignore_case=True), state='*')
+    # dp.register_callback_query_handler(enter_promo_year, Text(equals='promocode', ignore_case=True), state='*')
+    dp.register_callback_query_handler(buy_month, Text(equals='buy_month', ignore_case=True), state='*')
+    dp.register_callback_query_handler(buy_year, Text(equals='buy_year', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_later, Text(equals='buy_later', ignore_case=True), state='*')
     dp.register_pre_checkout_query_handler(pre_checkout_query, lambda query : True, state='*')
     dp.register_message_handler(successful_payment, content_types=[ContentType.SUCCESSFUL_PAYMENT], state='*')    
