@@ -581,9 +581,9 @@ async def check_promo(message : types.Message, state : FSMContext):
         if data['Promo'] == 0:
             msg = types.Message.to_object(data['Last_message'])
             if data['buy_type'] == 0:
-                await msg.edit_text('Введённый промокод закончился или не найден!\nВы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+                await msg.edit_text(f'Введённый промокод закончился или не найден!\nВы выбрали подписку на месяц. Цена составит {PRICE_MONTH.amount} рублей, есть ли у вас промокод?', reply_markup=inline_promo)
             else:
-                await msg.edit_text('Введённый промокод закончился или не найден!\nВы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+                await msg.edit_text(f'Введённый промокод закончился или не найден!\nВы выбрали подписку на год. Цена составит {PRICE_YEAR.amount} рублей, есть ли у вас промокод?', reply_markup=inline_promo)
             return
         if data['Promo'] == 100:
             await message.answer(ABOUT_UNIC_PROMO)
