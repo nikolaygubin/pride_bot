@@ -313,7 +313,7 @@ async def find_users_without_pair():
     
     for user in users:
         try:
-            await bot.send_message(user[0], f'Здраствуйте, уважаемый {user[1]}! Команда PRIDE_CONNECT приносит извенения, так как мы не смогли подобрать вам пару в связи с тем, \
+            await bot.send_message(user[0], f'Здраствуйте, уважаемый {user[1]}!\nКоманда PRIDE_CONNECT приносит извенения, так как мы не смогли подобрать вам пару в связи с тем, \
 что на этой неделе нечётное количество пользователей. Но не спешите расстраиваться, мы автоматически занесём вас в список на дополнительную пару.\n\n\
 Также мы добавили вам неделю подписки.')
             await try_make_pair(user[0])
@@ -419,7 +419,9 @@ async def find_id_from_tg(tg):
     cursor.execute('SELECT id FROM users WHERE tg = %s', (tg, ))
     return cursor.fetchone()[0]
         
-async def try_make_pair(id):
+async def try_make_pair(id):  
+    if datetime.datetime.today().weekday() > 3 :
+        return 
     cursor.execute("SELECT last_pairs FROM users WHERE id = %s", (id, ))
     last_pairs = cursor.fetchone()[0]
     if len(last_pairs) < 2:
