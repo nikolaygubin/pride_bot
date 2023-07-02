@@ -643,30 +643,56 @@ async def buy(callback_query : types.CallbackQuery, state : FSMContext):
     promo_amount = str()
     async with state.proxy() as data:
         promo_amount = data['Promo']
-        msg = types.Message.to_object(data['Last_message'])
-        await msg.delete_reply_markup()   
-        if data['buy_type'] == 0:
-            price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE_MONTH.amount * (1 - int(promo_amount) / 100)))
-            await bot.send_invoice(callback_query.from_user.id,
-                                   title='Подписка на месяц',
-                                   description='Активация подписки!',
-                                   provider_token=PAYMENT_TOKEN,
-                                   currency='rub',
-                                   is_flexible=False,
-                                   prices=[price],
-                                   start_parameter='one-month-sub',
-                                   payload='test-invoice-payload')
-        else:
-            price = types.LabeledPrice(label='Подписка на год', amount = int(PRICE_YEAR.amount * (1 - int(promo_amount) / 100)))
-            await bot.send_invoice(callback_query.from_user.id,
-                                   title='Подписка на год',
-                                   description='Активация подписки!',
-                                   provider_token=PAYMENT_TOKEN,
-                                   currency='rub',
-                                   is_flexible=False,
-                                   prices=[price],
-                                   start_parameter='one-month-sub',
-                                   payload='test-invoice-payload')
+        try:
+            msg = types.Message.to_object(data['Last_message'])
+            await msg.delete_reply_markup()   
+        
+            if data['buy_type'] == 0:
+                price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE_MONTH.amount * (1 - int(promo_amount) / 100)))
+                await bot.send_invoice(callback_query.from_user.id,
+                                       title='Подписка на месяц',
+                                       description='Активация подписки!',
+                                       provider_token=PAYMENT_TOKEN,
+                                       currency='rub',
+                                       is_flexible=False,
+                                       prices=[price],
+                                       start_parameter='one-month-sub',
+                                       payload='test-invoice-payload')
+            else:
+                price = types.LabeledPrice(label='Подписка на год', amount = int(PRICE_YEAR.amount * (1 - int(promo_amount) / 100)))
+                await bot.send_invoice(callback_query.from_user.id,
+                                       title='Подписка на год',
+                                       description='Активация подписки!',
+                                       provider_token=PAYMENT_TOKEN,
+                                       currency='rub',
+                                       is_flexible=False,
+                                       prices=[price],
+                                       start_parameter='one-month-sub',
+                                       payload='test-invoice-payload')
+        except:
+            if data['menu_buy_type'] == 0:
+                price = types.LabeledPrice(label='Подписка на 1 месяц', amount = int(PRICE_MONTH.amount * (1 - int(promo_amount) / 100)))
+                await bot.send_invoice(callback_query.from_user.id,
+                                       title='Подписка на месяц',
+                                       description='Активация подписки!',
+                                       provider_token=PAYMENT_TOKEN,
+                                       currency='rub',
+                                       is_flexible=False,
+                                       prices=[price],
+                                       start_parameter='one-month-sub',
+                                       payload='test-invoice-payload')
+            else:
+                price = types.LabeledPrice(label='Подписка на год', amount = int(PRICE_YEAR.amount * (1 - int(promo_amount) / 100)))
+                await bot.send_invoice(callback_query.from_user.id,
+                                       title='Подписка на год',
+                                       description='Активация подписки!',
+                                       provider_token=PAYMENT_TOKEN,
+                                       currency='rub',
+                                       is_flexible=False,
+                                       prices=[price],
+                                       start_parameter='one-month-sub',
+                                       payload='test-invoice-payload')
+            
         
 async def pre_checkout_query(pre_checkout_q : types.PreCheckoutQuery):
     await bot.answer_pre_checkout_query(pre_checkout_q.id, ok=True)
