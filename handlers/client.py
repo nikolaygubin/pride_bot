@@ -658,7 +658,6 @@ async def buy(callback_query : types.CallbackQuery, state : FSMContext):
                                    prices=[price],
                                    start_parameter='one-month-sub',
                                    payload='test-invoice-payload')
-    await state.finish()
         
 async def pre_checkout_query(pre_checkout_q : types.PreCheckoutQuery):
     await bot.answer_pre_checkout_query(pre_checkout_q.id, ok=True)
