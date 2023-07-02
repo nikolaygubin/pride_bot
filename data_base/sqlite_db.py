@@ -263,6 +263,27 @@ async def add_user_paid(id):
         print(ex)
         await bot.send_message(id, 'Не удалось записать данные об оплате!')
  
+async def add_user_paid_year(id):
+    try:
+        cursor.execute('SELECT * FROM users WHERE id = %s', (id, ))
+        user = cursor.fetchone()
+        if user[14] == True:
+            mas_date = user[15].split('-')
+            date = datetime.date(int(mas_date[2]), int(mas_date[1]), int(mas_date[0]))
+            date += datetime.timedelta(days=365)
+            str_date = str(date.day) + '-' + str(date.month) + '-' + str(date.year)
+        else:
+            date = datetime.datetime.now().date()
+            date += datetime.timedelta(days=365)
+            str_date = str(date.day) + '-' + str(date.month) + '-' + str(date.year)
+
+        cursor.execute('UPDATE users SET is_sub_active = %s, date_out_active = %s WHERE id = %s', (True, str_date, id))
+        base.commit()
+        await bot.send_message(id, 'Данные об оплате успешно записаны!')
+    except Exception as ex:
+        print(ex)
+        await bot.send_message(id, 'Не удалось записать данные об оплате!')
+ 
  
 async def check_paid(id):
     cursor.execute('SELECT is_sub_active, date_out_active FROM users WHERE id = %s', (id,))
