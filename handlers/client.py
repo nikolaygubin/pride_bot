@@ -50,8 +50,6 @@ class Client(StatesGroup):
     start_pay = State()
     buy_month = State()
     buy_year = State()
-    promo_month = State()
-    promo_year = State()
     get_promocode = State()
     
 class Change(StatesGroup):  
@@ -61,10 +59,11 @@ class Change(StatesGroup):
 class Menu(StatesGroup):
     menu = State()
     menu_point = State()
-
-class Menu_buy(StatesGroup):
-    get_promocode = State()
     start_pay = State()
+    buy_month = State()
+    buy_year = State()
+    get_promocode = State()
+    
 
 #вернуться к предыдущему вопросу
 async def back(callback_query : types.CallbackQuery, state : FSMContext):
@@ -615,7 +614,7 @@ async def buy_month(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text('Вы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+        await msg.edit_text(f'Вы выбрали подписку на месяц. Цена составит {PRICE_MONTH / 100} рублей, есть ли у вас промокод?', reply_markup=inline_promo)
         data['Last_message'] = msg.to_python()
         data['buy_type'] = 0
     await Client.buy_month.set()
@@ -624,7 +623,7 @@ async def buy_year(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
-        await msg.edit_text('Вы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+        await msg.edit_text(f'Вы выбрали подписку на год. Цена составит {PRICE_YEAR / 100} рублей, есть ли у вас промокод?', reply_markup=inline_promo)
         data['Last_message'] = msg.to_python()
         data['buy_type'] = 1
     await Client.buy_year.set()
@@ -758,7 +757,7 @@ async def buy_sub(callback_query : types.CallbackQuery, state : FSMContext):
                               11 : 'Ноября', 12 : 'Декабря'}   
                 msg = types.Message.to_object(data['Main_message'])            
                 await msg.edit_text(f'Ваша подписка истекла {paid_date[0]} {month_dict[int(paid_date[1])]} {paid_date[2]} года⏳', reply_markup=inline_kb_menu_buy) 
-    await Menu_buy.start_pay.set()
+    await Menu.start_pay.set()
 
 async def current_buddy(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
@@ -799,12 +798,6 @@ async def next_history(callback_query: types.CallbackQuery, state : FSMContext):
         data['Page_num'] += 1
     async with state.proxy() as data:
         await sqlite_db.get_history(callback_query.from_user.id, state)
-    #     msg = types.Message.to_object(data['Main_message'])
-    #     if history != None:
-    #         await msg.edit_text(history, reply_markup=kb_history)
-    # async with state.proxy() as data:
-    #     if cur_page == data['Page_num']:
-    #         await msg.edit_reply_markup(kb_only_prev)
 
 async def prev_history(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
@@ -812,11 +805,6 @@ async def prev_history(callback_query: types.CallbackQuery, state : FSMContext):
         data['Page_num'] -= 1
     async with state.proxy() as data:
         await sqlite_db.get_history(callback_query.from_user.id, state)
-        # msg = types.Message.to_object(data['Main_message'])
-        # if history != None:
-        #     await msg.edit_text(history, reply_markup=kb_history)
-        # if data['Page_num'] <= 0:
-        #     await msg.edit_reply_markup(kb_only_next)
 
 async def back_main(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
@@ -1013,8 +1001,8 @@ async def menu_enter_promocode(callback_query : types.CallbackQuery, state : FSM
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Main_message'])
-        await msg.edit_text('Введите промокод')
-    await Menu_buy.get_promocode.set()
+        await msg.edit_text('Введите промокод', reply_markup=inline_kb_quest)
+    await Menu.get_promocode.set()
         
 async def menu_check_promo(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
@@ -1024,7 +1012,7 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
             await msg.edit_text('Промокод недействительный')
             msg = await bot.send_message(message.from_user.id, 'Оплата подписки', reply_markup=inline_kb_menu_buy)
             data['Main_message'] = msg.to_python()
-            await Menu_buy.next()
+            await Menu.start_pay.set()
             return
         await message.delete()
         if data['Promo'] == 100:
@@ -1039,7 +1027,6 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
         promo_amount = data['Promo']
         msg = types.Message.to_object(data['Main_message'])
         await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_menu_buy)  
-    await Menu_buy.next()
     
 async def menu_buy(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()    
@@ -1125,6 +1112,24 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
 async def unknown(message : types.Message):
     await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\n\
 Введите команду /help если у вас возникли проблемы с ботом')
+
+async def menu_buy_month(callback_query : types.CallbackQuery, state : FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data:
+        msg = types.Message.to_object(data['Main_message'])
+        await msg.edit_text(f'Вы выбрали подписку на месяц. Цена составит {PRICE_MONTH / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+        data['Main_message'] = msg.to_python()
+        data['menu_buy_type'] = 0
+    await Menu.buy_month.set()
+    
+async def menu_buy_year(callback_query : types.CallbackQuery, state : FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data:
+        msg = types.Message.to_object(data['Last_message'])
+        await msg.edit_text(f'Вы выбрали подписку на год. Цена составит {PRICE_YEAR / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
+        data['Main_message'] = msg.to_python()
+        data['menu_buy_type'] = 1
+    await Menu.buy_year.set()
 
 def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(next_step, Text(equals='next', ignore_case=True), state='*')
@@ -1255,8 +1260,13 @@ def register_handlers_client(dp : Dispatcher):
     
     #payment from menu
     dp.register_callback_query_handler(menu_enter_promocode, Text(equals='menu_promocode', ignore_case=True), state='*')
-    dp.register_message_handler(menu_check_promo, state=Menu_buy.get_promocode)
-    dp.register_callback_query_handler(menu_buy, Text(equals='menu_buy', ignore_case=True), state=Menu_buy.start_pay)
+    dp.register_message_handler(menu_check_promo, state=Menu.get_promocode)
+    dp.register_callback_query_handler(menu_buy, Text(equals='menu_buy', ignore_case=True), state='*')
+    
+    dp.register_callback_query_handler(buy, Text(equals='buy', ignore_case=True), state='*')
+    dp.register_callback_query_handler(buy, Text(equals='buy_now', ignore_case=True), state='*')
+    dp.register_callback_query_handler(menu_buy_month, Text(equals='buy_month', ignore_case=True), state='*')
+    dp.register_callback_query_handler(menu_buy_year, Text(equals='buy_year', ignore_case=True), state='*')
       
     #ask_impress
     dp.register_callback_query_handler(impress_nice, Text(equals='nice', ignore_case=True), state='*')
