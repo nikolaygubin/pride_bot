@@ -607,7 +607,7 @@ async def buy_later(callbck_query : types.CallbackQuery, state : FSMContext):
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Last_message'])
         await msg.edit_reply_markup(None)
-        await bot.send_message(callbck_query.from_user.id, MENU, reply_markup=inline_kb_menu)
+        msg = await bot.send_message(callbck_query.from_user.id, MENU, reply_markup=inline_kb_menu)
         data['Main_message'] = msg.to_python()
     await Menu.menu.set()
     
