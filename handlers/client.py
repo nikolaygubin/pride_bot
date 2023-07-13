@@ -1183,6 +1183,7 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
 async def unknown(message : types.Message):
     await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\n\
 Введите команду /help если у вас возникли проблемы с ботом')
+    await message.answer(f'{message.text}')
 
 async def menu_buy_month(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
