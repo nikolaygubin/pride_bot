@@ -240,7 +240,7 @@ async def add_promo(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer() 
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Admin_message']) 
-        await msg.edit_text('Введите промокод в следующем формате : промокод - процент - количество активаций\nПример: month 10 20\nПромкод с процентом 100 означает бесплатную подписку при его вводе', reply_markup=inline_kb_back_promo)
+        await msg.edit_text('Введите промокод в следующем формате : промокод - процент - количество активаций - количество месяцев\nПример: month 10 20 3\nПромкод с процентом 100 означает бесплатную подписку при его вводе', reply_markup=inline_kb_back_promo)
     await Admin.promo_point.set()
     
 async def get_promo(message : types.Message, state : FSMContext):
