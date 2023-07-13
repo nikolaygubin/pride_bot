@@ -1180,7 +1180,7 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
         msg = types.Message.to_object(data['Restart_message'])
         await msg.delete()
 
-async def unknown(message : types.Message):
+async def unknown(message : types.Message, state : FSMContext):
     try:
         command = message.text.split(' ')
         await message.answer(f'{command[0]} -- {command[1]}')
