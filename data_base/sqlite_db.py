@@ -735,7 +735,7 @@ async def del_out_promo():
             base.commit()
             
 async def add_ref(ref_name : str, id : int):
-    cursor.execute('SELECT * FROM ref where id = %s', (ref_name, ))
+    cursor.execute('SELECT * FROM ref WHERE refcode = %s', (ref_name, ))
     ref_user = cursor.fetchone()
     if ref_user == None:
         return
