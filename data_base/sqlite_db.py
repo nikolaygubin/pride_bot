@@ -733,3 +733,23 @@ async def del_out_promo():
         if now_date > out_date:
             cursor.execute("DELETE FROM promo WHERE code = %s", (promo[0],))
             base.commit()
+            
+async def add_ref(ref_name : str, id : int):
+    cursor.execute('SELECT * FROM ref where id = %s', (ref_name, ))
+    ref_user = cursor.fetchone()
+    if ref_user == None:
+        return
+    
+    if id not in ref_user[1]:
+        cursor.execute('UPDATE ref SET number = %s, id = array_append(id, %s) WHERE refcode = %s', ref_user[2] + 1, id, ref_name)
+        base.commit()
+        
+async def get_refs():
+    cursor.execute('SELECT * FROM ref');
+    refs = cursor.fetchall()
+    
+    data = str()
+    for ref in refs:
+        data += f'{ref[0]} : {ref[2]} рефералов\n'
+    
+    return data

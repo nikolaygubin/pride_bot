@@ -23,6 +23,7 @@ inline_kb_statistics = InlineKeyboardMarkup(resize_keyboard=True).add(InlineKeyb
                 InlineKeyboardButton(text='Кол-во платных подписок', callback_data='paid_users')).add(
                 InlineKeyboardButton(text='Кол-во демо подписок', callback_data='demo_users')).add(
                 InlineKeyboardButton(text='Кол-во активных пользователей', callback_data='active_users')).add(
+                InlineKeyboardButton(text='Рефералы', callback_data='refs')).add(
                 InlineKeyboardButton(text='Назад', callback_data='back_admin_main'))  
                 
 inline_kb_actions = InlineKeyboardMarkup(resize_keyboard=True).add(
@@ -127,6 +128,14 @@ async def active_users(callback_query : types.callback_query, state : FSMContext
         msg = types.Message.to_object(data['Admin_message'])
         await msg.edit_text(f'Активных на этой неделе = {await sqlite_db.active_users()}', reply_markup=inline_kb_back_stat)
     await Admin.stat_point.set() 
+
+async def see_ref(callback_query : types.callback_query, state : FSMContext):
+    await callback_query.answer()        
+    async with state.proxy() as data:
+        msg = types.Message.to_object(data['Admin_message'])
+        await msg.edit_text(f'{await sqlite_db.get_refs()}', reply_markup=inline_kb_back_stat)
+    await Admin.stat_point.set() 
+
  
     
 async def back_stat(callback_query : types.callback_query, state : FSMContext):
@@ -291,7 +300,8 @@ def register_handlers_admin(dp : Dispatcher):
     dp.register_callback_query_handler(count_users_town, Text(equals='count_users_town', ignore_case=True), state=Admin.statistics)
     dp.register_callback_query_handler(paid_users, Text(equals='paid_users', ignore_case=True), state=Admin.statistics)
     dp.register_callback_query_handler(demo_users, Text(equals='demo_users', ignore_case=True), state=Admin.statistics)
-    dp.register_callback_query_handler(active_users, Text(equals='active_users', ignore_case=True), state=Admin.statistics)    
+    dp.register_callback_query_handler(active_users, Text(equals='active_users', ignore_case=True), state=Admin.statistics) 
+    dp.register_callback_query_handler(see_ref, Text(equals='refs', ignore_case=True), state=Admin.statistics)    
     
     dp.register_callback_query_handler(actions_menu, Text(equals='actives', ignore_case=True), state=Admin.start) # actions_menu
     dp.register_callback_query_handler(back_act, Text(equals='back_act', ignore_case=True), state=Admin.action_point)
