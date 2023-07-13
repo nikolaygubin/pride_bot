@@ -582,7 +582,10 @@ async def enter_promocode(callback_query : types.CallbackQuery, state : FSMConte
 async def check_promo(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         data['Promo'] = await sqlite_db.check_promo(message)
-        await message.delete()
+        try:
+            await message.delete()
+        except:
+            pass
         if data['Promo'] == 0:
             msg = types.Message.to_object(data['Last_message'])
             if data['buy_type'] == 0:
@@ -1060,7 +1063,10 @@ async def menu_enter_promocode(callback_query : types.CallbackQuery, state : FSM
 async def menu_check_promo(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
         data['Promo'] = await sqlite_db.check_promo(message)
-        await message.delete()
+        try:
+            await message.delete()
+        except:
+            pass
         if data['Promo'] == 0:
             msg = types.Message.to_object(data['Main_message'])
             if data['menu_buy_type'] == 0:
