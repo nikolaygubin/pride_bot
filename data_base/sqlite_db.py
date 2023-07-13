@@ -81,8 +81,8 @@ async def insert_promo(message : types.Message):
         return 'Промокод был добавлен ранее!'
     else:
         date = datetime.datetime.now().date();
-        date += datetime.timedelta(days=30 * int(array_values[4]))
-        cursor.execute('INSERT INTO promo VALUES (%s, %s, %s, %s, %s)', (array_values[0], array_values[1], array_values[2], array_values[3]), str(date))
+        date += datetime.timedelta(days=30 * int(array_values[3]))
+        cursor.execute('INSERT INTO promo VALUES (%s, %s, %s, %s, %s)', (array_values[0], array_values[1], array_values[2], array_values[4], str(date)),)
         base.commit()
         return  'Промокод успешно добавлен!'
     
