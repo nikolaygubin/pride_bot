@@ -738,11 +738,12 @@ async def add_ref(ref_name : str, id : int):
     cursor.execute('SELECT * FROM ref WHERE refcode = %s', (ref_name, ))
     ref_user = cursor.fetchone()
     if ref_user == None:
-        return
+        return None
     
     if id not in ref_user[1]:
-        cursor.execute('UPDATE ref SET number = %s, id = array_append(id, %s) WHERE refcode = %s', ref_user[2] + 1, id, ref_name)
+        cursor.execute('UPDATE ref SET number = %s, id = array_append(id, %s) WHERE refcode = %s', (ref_user[2] + 1, id, ref_name,))
         base.commit()
+    return 1
         
 async def get_refs():
     cursor.execute('SELECT * FROM ref');
