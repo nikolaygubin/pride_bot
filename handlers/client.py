@@ -1183,6 +1183,7 @@ async def cancel(callback_query: types.CallbackQuery, state : FSMContext):
 async def unknown(message : types.Message):
     try:
         command = message.text.split(' ')
+        await message.answer(f'{command[0]} -- {command[1]}')
         if command[0] == '/start':
             await sqlite_db.add_ref(command[1], message.from_user.id)
     except:
