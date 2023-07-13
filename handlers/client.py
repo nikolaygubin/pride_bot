@@ -1192,7 +1192,7 @@ async def unknown(message : types.Message, state : FSMContext):
         data['Last_message'] = msg.to_python()
     return
     # except:
-        pass
+        # pass
     await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\n\
 Введите команду /help если у вас возникли проблемы с ботом')
 
