@@ -178,3 +178,6 @@ async def is_active():
 
 async def update_paid():
     await sqlite_db.update()
+    
+async def del_promo():
+    await sqlite_db.del_out_promo();
