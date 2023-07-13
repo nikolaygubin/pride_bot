@@ -229,7 +229,7 @@ async def show_promo(callback_query : types.CallbackQuery, state : FSMContext) :
     all_promo = await sqlite_db.get_promocodes() 
     str_promo = 'Промокоды :\n'
     for promo in all_promo :
-        str_promo += f'{promo[0]}  {promo[1]}% {promo[2]} активаций\n'
+        str_promo += f'{promo[0]}  {promo[1]}% {promo[2]} активаций (до {promo[4]})\n'
     await Admin.promo_point.set()
 
     async with state.proxy() as data:

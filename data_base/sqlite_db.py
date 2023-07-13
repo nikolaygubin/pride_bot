@@ -33,7 +33,7 @@ def start_sql():
     email TEXT, is_sub_active BOOL, date_out_active TEXT, last_pairs BIGINT[], all_pairs BIGINT[], impress_of_meet INT[], active BOOL)')
     base.commit()
     
-    cursor.execute('CREATE TABLE IF NOT EXISTS promo(code TEXT PRIMARY KEY, amount INT, count INT, active_id BIGINT[])')
+    cursor.execute('CREATE TABLE IF NOT EXISTS promo(code TEXT PRIMARY KEY, amount INT, count INT, active_id BIGINT[], date_out TEXT)')
     base.commit()  
     
     cursor.execute('CREATE TABLE IF NOT EXISTS temp_users(user_id BIGINT)')
@@ -69,7 +69,7 @@ async def check_promo(message : types.Message):
 async def insert_promo(message : types.Message):
     array_values = message.text.split(' ')
     array_values.append('{ }')
-    if len(array_values) != 4 or int(array_values[1]) > 100 or int(array_values[1]) < 1:
+    if len(array_values) != 5 or int(array_values[1]) > 100 or int(array_values[1]) < 1:
         return 'Промокод введён некорректно!'
         return
     cursor.execute('SELECT code FROM promo')
@@ -80,7 +80,9 @@ async def insert_promo(message : types.Message):
     if array_values[0] in codes:
         return 'Промокод был добавлен ранее!'
     else:
-        cursor.execute('INSERT INTO promo VALUES (%s, %s, %s, %s)', array_values)
+        date = datetime.datetime.now().date();
+        date += datetime.timedelta(days=30 * array_values[4])
+        cursor.execute('INSERT INTO promo VALUES (%s, %s, %s, %s, %s)', (array_values[0], array_values[1], array_values[2], array_values[3]), str(date))
         base.commit()
         return  'Промокод успешно добавлен!'
     
@@ -334,8 +336,8 @@ async def find_users_without_pair():
     
     for user in users:
         try:
-            await bot.send_message(user[0], f'Здраствуйте, уважаемый {user[1]}!\nКоманда PRIDE_CONNECT приносит извенения, так как мы не смогли подобрать вам пару в связи с тем, \
-что на этой неделе нечётное количество пользователей. Но не спешите расстраиваться, мы автоматически занесём вас в список на дополнительную пару.\n\n\
+            await bot.send_message(user[0], f'Добрый день, {user[1]}!\nКоманда PRIDE_CONNECT приносит извинения, так как \
+на этой неделе нечётное количество пользователей. Но не спешите расстраиваться, мы автоматически подберём вам пару, когда найдём партнёра, подходящего к вашим критерям.\n\n\
 Также мы добавили вам неделю подписки.')
             await try_make_pair(user[0])
             await add_one_week(user[0])

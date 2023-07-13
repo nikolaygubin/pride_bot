@@ -210,6 +210,11 @@ async def menu(message : types.Message, state : FSMContext):
                 await msg.delete()
             except:
                 pass
+        try:
+            msg = types.Message.to_object(data['Last_message'])
+            await msg.delete_reply_markup()
+        except:
+            pass
         if await sqlite_db.is_register(message.from_user.id) == False:
             await message.answer('Для того, чтобы перейти в главное меню вы должны заполнить анкету!\nВведите /start, чтобы начать заполнение или воспользуйтесь опцией /help')
             return
