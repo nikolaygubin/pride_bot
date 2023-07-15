@@ -1163,7 +1163,10 @@ async def at_start(callback_query: types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
         msg = types.Message.to_object(data['Restart_message'])
-        await msg.delete()
+        try:
+            await msg.delete()
+        except:
+            pass
         try:
             msg = types.Message.to_object(data['Last_message'])
             await msg.delete_reply_markup()
@@ -1197,14 +1200,12 @@ async def unknown(message : types.Message, state : FSMContext):
                     user_name = message.from_user.first_name
                     msg = await message.answer(f'Привет, {user_name}⚡️!\n' + START_MESSAGE, reply_markup=inline_kb_go)
                     data['Last_message'] = msg.to_python()
-            else:
-                await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\n\
+        else:
+            await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\n\
 Введите команду /help если у вас возникли проблемы с ботом')
         return
     except:
-        await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\n\
-Введите команду /help если у вас возникли проблемы с ботом')
-        return
+        pass
     await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\n\
 Введите команду /help если у вас возникли проблемы с ботом')
 
