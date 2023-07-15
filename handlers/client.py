@@ -1193,13 +1193,12 @@ async def unknown(message : types.Message, state : FSMContext):
     try:
         command = message.text.split(' ')
         if command[0] == '/start':
-            ret = await sqlite_db.add_ref(command[1], message.from_user.id)
-            if ret != None:
-                await Client.id.set()
-                async with state.proxy() as data:
-                    user_name = message.from_user.first_name
-                    msg = await message.answer(f'Привет, {user_name}⚡️!\n' + START_MESSAGE, reply_markup=inline_kb_go)
-                    data['Last_message'] = msg.to_python()
+            await sqlite_db.add_ref(command[1], message.from_user.id)
+            await Client.id.set()
+            async with state.proxy() as data:
+                user_name = message.from_user.first_name
+                msg = await message.answer(f'Привет, {user_name}⚡️!\n' + START_MESSAGE, reply_markup=inline_kb_go)
+                data['Last_message'] = msg.to_python()
         else:
             await message.answer('Неизвестная команда!\nДля навигации в боте импользуйте Меню.\n\
 Введите команду /help если у вас возникли проблемы с ботом')
