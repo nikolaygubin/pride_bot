@@ -402,6 +402,20 @@ async def is_last_pair(id, pair_id):
 
 async def find_users_without_pair():
     cursor.execute(
+        "SELECT id, name online FROM users WHERE array_upper(last_pairs, 1) is null and active = true and is_sub_active = true"
+    )
+    users = cursor.fetchall()
+    if users == None:
+        return
+
+    for user in users:
+        try:
+            await try_make_pair(user[0])
+            await add_one_week(user[0])
+        except:
+            print("Я в блоке")
+            
+    cursor.execute(
         "SELECT id, name online FROM users WHERE array_upper(last_pairs, 1) is null and active = true"
     )
     users = cursor.fetchall()
@@ -416,8 +430,6 @@ async def find_users_without_pair():
 на этой неделе нечётное количество пользователей. Но не спешите расстраиваться, мы автоматически подберём вам пару, когда найдём партнёра, подходящего к вашим критерям.\n\n\
 Также мы добавили вам неделю подписки.",
             )
-            await try_make_pair(user[0])
-            await add_one_week(user[0])
         except:
             print("Я в блоке")
 
