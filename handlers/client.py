@@ -16,7 +16,6 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import os
 import datetime
 import urllib.request as req
-import urllib3.request as req
 import validators
 
 PAYMENT_TOKEN = os.getenv('PAYMENT_TOKEN')
