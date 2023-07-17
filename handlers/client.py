@@ -365,10 +365,13 @@ async def enter_town(callback_query : types.CallbackQuery, state : FSMContext):
 # обработка получения социальной сети
 async def get_social_network(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
+        url = message.text
+        if url[:4] != 'http':
+            url = 'https://' + url
         try:
-            request = req.Request(message.text)
+            request = req.Request(url)
             response = req.urlopen(request)
-            data['Социальные сети'] = message.text
+            data['Социальные сети'] = url
             msg = types.Message.to_object(data['Last_message'])
             await msg.delete_reply_markup()
             msg = await message.answer(GET_WORK, reply_markup=inline_kb_quest)  
