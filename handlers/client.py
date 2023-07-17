@@ -15,6 +15,8 @@ from work_with_pairs import similarity
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import os
 import datetime
+import urllib.request as req
+import urllib3.request as req
 import validators
 
 PAYMENT_TOKEN = os.getenv('PAYMENT_TOKEN')
@@ -364,17 +366,20 @@ async def enter_town(callback_query : types.CallbackQuery, state : FSMContext):
 # обработка получения социальной сети
 async def get_social_network(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
-        if not validators.url(message.text):
+        request = req.Request(message.text)
+        try:
+            response = req.urlopen(request)
+            data['Социальные сети'] = message.text
+            msg = types.Message.to_object(data['Last_message'])
+            await msg.delete_reply_markup()
+            msg = await message.answer(GET_WORK, reply_markup=inline_kb_quest)  
+            data['Last_message'] = msg.to_python()
+        except:
             msg = types.Message.to_object(data['Last_message'])
             await msg.delete_reply_markup()
             msg = await bot.send_message(message.from_user.id, 'Ваше сообщение не является ссылкой! Пожалуйста отправьте ссылку на вашу социальную сеть.\n Например: Вконтакте, Инстаграм', reply_markup=inline_kb_quest_social) 
             data['Last_message'] = msg.to_python()             
-            return
-        data['Социальные сети'] = message.text
-        msg = types.Message.to_object(data['Last_message'])
-        await msg.delete_reply_markup()
-        msg = await message.answer(GET_WORK, reply_markup=inline_kb_quest)  
-        data['Last_message'] = msg.to_python()    
+            return   
     await Client.next()
     
     
