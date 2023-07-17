@@ -365,8 +365,8 @@ async def enter_town(callback_query : types.CallbackQuery, state : FSMContext):
 # обработка получения социальной сети
 async def get_social_network(message : types.Message, state : FSMContext):
     async with state.proxy() as data:
-        request = req.Request(message.text)
         try:
+            request = req.Request(message.text)
             response = req.urlopen(request)
             data['Социальные сети'] = message.text
             msg = types.Message.to_object(data['Last_message'])
