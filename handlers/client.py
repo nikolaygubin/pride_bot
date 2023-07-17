@@ -364,25 +364,23 @@ async def enter_town(callback_query : types.CallbackQuery, state : FSMContext):
 
 # обработка получения социальной сети
 async def get_social_network(message : types.Message, state : FSMContext):
+    url = message.text
+    if url[:4] != 'http':
+        url = 'https://' + url
     async with state.proxy() as data:
-        url = message.text
-        if url[:4] != 'http':
-            url = 'https://' + url
-        try:
-            request = req.Request(url)
-            response = req.urlopen(request)
-            data['Социальные сети'] = url
-            msg = types.Message.to_object(data['Last_message'])
-            await msg.delete_reply_markup()
-            msg = await message.answer(GET_WORK, reply_markup=inline_kb_quest)  
-            data['Last_message'] = msg.to_python()
-        except:
+        if not validators.url(url):
             msg = types.Message.to_object(data['Last_message'])
             await msg.delete_reply_markup()
             msg = await bot.send_message(message.from_user.id, 'Ваше сообщение не является ссылкой! Пожалуйста отправьте ссылку на вашу социальную сеть.\n Например: Вконтакте, Инстаграм', reply_markup=inline_kb_quest_social) 
             data['Last_message'] = msg.to_python()             
-            return   
+            return
+        data['Социальные сети'] = url
+        msg = types.Message.to_object(data['Last_message'])
+        await msg.delete_reply_markup() 
+        msg = await message.answer(GET_WORK, reply_markup=inline_kb_quest)  
+        data['Last_message'] = msg.to_python()    
     await Client.next()
+
     
     
 # обработка получения занятий
