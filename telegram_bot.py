@@ -29,6 +29,8 @@ async def on_shutdown(dp):
     await sqlite_db.close_db()
     await bot.delete_webhook()
 
+    
+
 if __name__ == "__main__" :
     executor.start_webhook(
         dispatcher = dp,
