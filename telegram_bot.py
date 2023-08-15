@@ -23,7 +23,7 @@ async def on_startup(dp):
     scheduler.add_job(update_paid, 'cron', day_of_week='6', hour='8', minute='0', timezone='Europe/Moscow')
     scheduler.start()
     await bot.set_webhook(os.environ.get('URL'))
-    sqlite_db.start_sql()
+    # sqlite_db.start_sql()
 
 async def on_shutdown(dp):
     await sqlite_db.close_db()
