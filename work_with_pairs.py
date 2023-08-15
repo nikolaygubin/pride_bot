@@ -50,7 +50,7 @@ async def make_pairs():
         for town in offline_dict.keys(): # проходимся по всем городам и пытаемся сформировать пары
             town_id = list(offline_dict[town]) # иницализируем массив с пользователями в городе town
             for id in range(len(town_id)): # пытаемся подобрать пару каждому пользователю
-                max_sim = -1    # максимальная схожесть
+                max_sim = -1    
                 max_index = id  # индекс с максимальной схожестью (по умолчанию ссылается на самого себя)
                 for pair_id in range(len(town_id)):
                     if town_id[id] in dict_pairs.values():
