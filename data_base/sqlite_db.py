@@ -624,7 +624,7 @@ async def clear_temp_users():
 
 
 async def active_users():
-    cursor.execute("SELECT * FROM users WHERE active = true")
+    cursor.execute("SELECT * FROM users WHERE active = true and is_sub_active = true")
     return len(cursor.fetchall())
 
 
@@ -668,13 +668,13 @@ async def update():
         if date_out < present:
             counter += 1
             await remove_active(user[0])
-            try:
-                await bot.send_message(
-                    user[0],
-                    "Ваша подписка истекла, чтобы дальше продолжать подбор собеседников совершите оплату",
-                )
-            except:
-                pass
+            # try:
+            #     await bot.send_message(
+            #         user[0],
+            #         "Ваша подписка истекла, чтобы дальше продолжать подбор собеседников совершите оплату",
+            #     )
+            # except:
+            #     pass
     return counter
 
 
