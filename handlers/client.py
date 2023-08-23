@@ -1091,7 +1091,6 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
             await sqlite_db.add_demo_paid(message.from_user.id)
             msg = types.Message.to_object(data['Main_message'])
             try:
-                msg = types.Message.to_object(data['Last_message'])
                 await msg.delete()
             except:
                 pass
