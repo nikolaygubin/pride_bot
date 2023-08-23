@@ -81,9 +81,9 @@ async def check_promo(message: types.Message):
 async def insert_promo(message: types.Message):
     array_values = message.text.split(" ")
     array_values.append("{ }")
-    if len(array_values) != 5 or int(array_values[1]) > 100 or int(array_values[1]) < 1:
+    if len(array_values) != 5 or int(array_values[1]) < 0:
         return "Промокод введён некорректно!"
-        return
+
     cursor.execute("SELECT code FROM promo")
     codes = []
     promo = cursor.fetchall()
