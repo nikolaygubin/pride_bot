@@ -598,9 +598,9 @@ async def check_promo(message : types.Message, state : FSMContext):
             else:
                 await msg.edit_text(f'Введённый промокод закончился или не найден!\nВы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_promo)
             return
-        if data['Promo'] == 100:
-            await message.answer(ABOUT_UNIC_PROMO)
-            await sqlite_db.add_user_paid(message.from_user.id)
+        if data['Promo'] >= 100:
+            # await message.answer(ABOUT_UNIC_PROMO)
+            await sqlite_db.add_user_paid_dynamic(message.from_user.id, data['Promo'] // 100)
             await sqlite_db.add_demo_paid(message.from_user.id)
             await state.finish()
             await Menu.menu.set()
@@ -1081,11 +1081,11 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
                 await msg.edit_text(f'Введённый промокод закончился или не найден!\nВы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_menu_promo)
                 await Menu.buy_year.set()
             return
-        if data['Promo'] == 100:
-            await sqlite_db.add_user_paid(message.from_user.id)
+        if data['Promo'] >= 100:
+            await sqlite_db.add_user_paid_dynamic(message.from_user.id, data['Promo'] // 100)
             await sqlite_db.add_demo_paid(message.from_user.id)
             msg = types.Message.to_object(data['Main_message'])
-            await msg.edit_text('Вы ввели уникальный промокод, ваша подписка продлена на месяц!👌')
+            # await msg.edit_text('Вы ввели уникальный промокод, ваша подписка продлена на месяц!👌')
             msg = await message.answer(MENU, reply_markup=inline_kb_menu)
             data['Main_message'] = msg.to_python()
             await Menu.menu.set()

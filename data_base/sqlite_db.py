@@ -286,6 +286,42 @@ async def count_paid_subs():
     return len(cursor.fetchall()) - await count_demo_subs()
 
 
+async def add_user_paid_dynamic(id, count_month) :
+    try:
+        cursor.execute("SELECT * FROM users WHERE id = %s", (id,))
+        user = cursor.fetchone()
+        if user[14] == True:
+            mas_date = user[15].split("-")
+            date = datetime.date(int(mas_date[2]), int(mas_date[1]), int(mas_date[0]))
+            for i in range(count_month):
+                days_month = calendar.monthrange(date.year, date.month)[1]
+                date += datetime.timedelta(days=days_month)
+            str_date = str(date.day) + "-" + str(date.month) + "-" + str(date.year)
+        else:
+            date = datetime.datetime.now().date()
+            for i in range(count_month):
+                days_month = calendar.monthrange(date.year, date.month)[1]
+                date += datetime.timedelta(days=days_month)
+            str_date = str(date.day) + "-" + str(date.month) + "-" + str(date.year)
+
+        cursor.execute(
+            "UPDATE users SET is_sub_active = %s, date_out_active = %s WHERE id = %s",
+            (True, str_date, id),
+        )
+        base.commit()
+        await bot.send_message(id, "Данные об оплате успешно записаны!")
+        month = str()
+        if count_month == 1:
+            month = 'месяц'
+        elif count_month < 5:
+            month = 'месяца'
+        else:
+            month = 'месяцев'  
+        await bot.send_message(id, f'Вы ввели уникальный промокод, ваша подписка продлена на {count_month} {month}!👌')
+    except Exception as ex:
+        print(ex)
+        await bot.send_message(id, "Не удалось записать данные об оплате!")  
+
 async def add_user_paid(id):
     try:
         cursor.execute("SELECT * FROM users WHERE id = %s", (id,))
@@ -747,18 +783,18 @@ async def del_out_promo():
             base.commit()
             
 async def add_ref(ref_name : str, id : int):
-    cursor.execute('SELECT * FROM ref WHERE refcode = %s', (ref_name, ))
+    cursor.execute('SELECT * FROM refs WHERE refcode = %s', (ref_name, ))
     ref_user = cursor.fetchone()
     if ref_user == None:
         return None
     
     if id not in ref_user[1]:
-        cursor.execute('UPDATE ref SET number = %s, id = array_append(id, %s) WHERE refcode = %s', (ref_user[2] + 1, id, ref_name,))
+        cursor.execute('UPDATE refs SET number = %s, id = array_append(id, %s) WHERE refcode = %s', (ref_user[2] + 1, id, ref_name,))
         base.commit()
     return 1
         
 async def get_refs():
-    cursor.execute('SELECT * FROM ref');
+    cursor.execute('SELECT * FROM refs');
     refs = cursor.fetchall()
     
     data = str()
