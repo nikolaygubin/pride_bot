@@ -602,6 +602,11 @@ async def check_promo(message : types.Message, state : FSMContext):
             # await message.answer(ABOUT_UNIC_PROMO)
             await sqlite_db.add_user_paid_dynamic(message.from_user.id, data['Promo'] // 100)
             await sqlite_db.add_demo_paid(message.from_user.id)
+            try:
+                msg = types.Message.to_object(data['Last_message'])
+                await msg.delete()
+            except:
+                pass
             await state.finish()
             await Menu.menu.set()
             msg = await message.answer(MENU, reply_markup=inline_kb_menu)
@@ -1085,7 +1090,11 @@ async def menu_check_promo(message : types.Message, state : FSMContext):
             await sqlite_db.add_user_paid_dynamic(message.from_user.id, data['Promo'] // 100)
             await sqlite_db.add_demo_paid(message.from_user.id)
             msg = types.Message.to_object(data['Main_message'])
-            # await msg.edit_text('Вы ввели уникальный промокод, ваша подписка продлена на месяц!👌')
+            try:
+                msg = types.Message.to_object(data['Last_message'])
+                await msg.delete()
+            except:
+                pass
             msg = await message.answer(MENU, reply_markup=inline_kb_menu)
             data['Main_message'] = msg.to_python()
             await Menu.menu.set()
