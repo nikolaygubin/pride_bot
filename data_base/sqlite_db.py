@@ -323,6 +323,8 @@ async def add_user_paid_dynamic(id, count_month) :
         await bot.send_message(id, "Не удалось записать данные об оплате!")  
 
 async def add_user_paid(id):
+    cursor.execute('DELETE FROM demo_users WHERE user_id = %s', (id, ))
+    base.commit()
     try:
         cursor.execute("SELECT * FROM users WHERE id = %s", (id,))
         user = cursor.fetchone()
@@ -452,7 +454,7 @@ async def find_users_without_pair():
             print("Я в блоке")
             
     cursor.execute(
-        "SELECT id, name online FROM users WHERE array_upper(last_pairs, 1) is null and active = true"
+        "SELECT id, name online FROM users WHERE array_upper(last_pairs, 1) is null and active = true and is_sub_active = true"
     )
     users = cursor.fetchall()
     if users == None:
@@ -668,13 +670,13 @@ async def update():
         if date_out < present:
             counter += 1
             await remove_active(user[0])
-            # try:
-            #     await bot.send_message(
-            #         user[0],
-            #         "Ваша подписка истекла, чтобы дальше продолжать подбор собеседников совершите оплату",
-            #     )
-            # except:
-            #     pass
+            try:
+                await bot.send_message(
+                    user[0],
+                    "Ваша подписка истекла, чтобы дальше продолжать подбор собеседников совершите оплату",
+                )
+            except:
+                pass
     return counter
 
 
