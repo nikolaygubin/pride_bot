@@ -124,9 +124,16 @@ async def back(callback_query : types.CallbackQuery, state : FSMContext):
             if data['buy_type'] == 0:
                 await msg.edit_text('Вы выбрали подписку на месяц. Цена составит 500 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
                 await Client.buy_month.set()
-            else:
+            elif data['buy_type'] == 1:
                 await msg.edit_text('Вы выбрали подписку на год. Цена составит 5000 рублей, есть ли у вас промокод?', reply_markup=inline_promo)
-                await Client.buy_year.set()     
+                await Client.buy_year.set()
+            else:
+                await Client.start_pay.set()
+                data['Promo'] = 0
+                # photo = open('./content/photo/pam1.png', 'rb')
+                # await bot.send_photo(callback_query.from_user.id, photo)
+                msg = await bot.send_message(callback_query.from_user.id, ABOUT_SUB, reply_markup=inline_kb_buy)
+                data['Last_message']  = msg.to_python()    
             return
     elif current_state == Client.buy_month.state or current_state == Client.buy_year.state:
         async with state.proxy() as data:
@@ -575,7 +582,17 @@ async def succses(callback_query : types.CallbackQuery, state : FSMContext):
         await bot.send_photo(callback_query.from_user.id, photo)
         msg = await bot.send_message(callback_query.from_user.id, ABOUT_SUB, reply_markup=inline_kb_buy)
         data['Last_message']  = msg.to_python()       
-       
+
+async def select_promo(callback_query : types.CallbackQuery, state : FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data:
+        data['buy_type'] = 2
+        msg = types.Message.to_object(data['Last_message'])
+        await msg.edit_text('Введите промокод:', reply_markup=inline_kb_quest)  
+        data['Last_message'] = msg.to_python()
+    await Client.get_promocode.set()
+    
+
 async def enter_promocode(callback_query : types.CallbackQuery, state : FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
@@ -595,8 +612,10 @@ async def check_promo(message : types.Message, state : FSMContext):
             msg = types.Message.to_object(data['Last_message'])
             if data['buy_type'] == 0:
                 await msg.edit_text(f'Введённый промокод закончился или не найден!\nВы выбрали подписку на месяц. Цена составит {PRICE_MONTH.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_promo)
-            else:
+            elif data['buy_type'] == 1:
                 await msg.edit_text(f'Введённый промокод закончился или не найден!\nВы выбрали подписку на год. Цена составит {PRICE_YEAR.amount / 100} рублей, есть ли у вас промокод?', reply_markup=inline_promo)
+            else:
+                await msg.edit_text(f'Введённый промокод закончился или не найден!\nВведите промокод', reply_markup=inline_kb_quest)
             return
         if data['Promo'] >= 100:
             # await message.answer(ABOUT_UNIC_PROMO)
@@ -614,7 +633,7 @@ async def check_promo(message : types.Message, state : FSMContext):
             return
         promo_amount = data['Promo']
         msg = types.Message.to_object(data['Last_message'])
-        if data['buy_type'] == 0:
+        if data['buy_type'] == 0 or data['buy_type'] == 2:
             await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_MONTH.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_buy_only)
         else:
             await msg.edit_text(f'С учётом вашего промокода цена составит {PRICE_YEAR.amount * (1 - float(promo_amount / 100)) // 100}', reply_markup=inline_kb_buy_only)
@@ -1329,6 +1348,7 @@ def register_handlers_client(dp : Dispatcher):
     dp.register_callback_query_handler(buy, Text(equals='buy_now', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_month, Text(equals='buy_month', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_year, Text(equals='buy_year', ignore_case=True), state='*')
+    dp.register_callback_query_handler(select_promo, Text(equals='just_promo', ignore_case=True), state='*')
     dp.register_callback_query_handler(buy_later, Text(equals='buy_later', ignore_case=True), state='*')
     dp.register_pre_checkout_query_handler(pre_checkout_query, lambda query : True, state='*')
     dp.register_message_handler(successful_payment, content_types=[ContentType.SUCCESSFUL_PAYMENT], state='*')    

@@ -41,6 +41,7 @@ menu_promo_button = InlineKeyboardButton(text='Есть промокод🌟', c
 
 inline_kb_buy = InlineKeyboardMarkup(resize_keyboard=True).row(InlineKeyboardButton(text='Оплатить месяц💵', callback_data='buy_month'))\
                                                           .row(InlineKeyboardButton(text='Оплатить год💵', callback_data='buy_year'))\
+                                                          .row(InlineKeyboardButton(text='Активировать промокод🌟', callback_data='just_promo'))\
                                                           .row(InlineKeyboardButton(text='Оплатить позднее🔜', callback_data='buy_later'))
                                                           
 inline_promo = InlineKeyboardMarkup(resize_keyboard=True).row(promo_button)\
