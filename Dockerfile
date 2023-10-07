@@ -6,8 +6,8 @@ FROM python:3-alpine
 RUN \
  apk add --no-cache python3 postgresql-libs && \
  apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
- pip install psycopg2-binary==2.9.6 && \
  pip install setuptools==58.2.0 && \
+ pip install psycopg2-binary==2.9.6 && \
  apk --purge del .build-deps
 
 # Cоздаем директорию, где будет размещено приложение
