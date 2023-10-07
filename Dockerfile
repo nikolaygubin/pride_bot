@@ -4,10 +4,10 @@ FROM python:3-alpine
 
 # Устанавливаем нужные приложению зависимости
 RUN \
- pip install setuptools==68.2.2 && \
  apk add --no-cache python3 postgresql-libs && \
  apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
- pip install psycopg2-binary --no-cache-dir
+ pip install setuptools==68.2.2 && \
+ pip install psycopg2-binary --no-cache-dir && \
  apk --purge del .build-deps
 
 #  pip install psycopg2 && \
