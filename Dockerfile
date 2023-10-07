@@ -8,9 +8,9 @@ RUN \
  apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
  pip install setuptools==68.2.2 && \
  pip install psycopg2-binary --no-cache-dir && \
+ pip install psycopg2 && \
  apk --purge del .build-deps
 
-#  pip install psycopg2 && \
 # Cоздаем директорию, где будет размещено приложение
 RUN mkdir /app
 WORKDIR /app
