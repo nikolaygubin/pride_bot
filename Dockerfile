@@ -1,23 +1,23 @@
-# Устанавливаем версию питона и используемы linux дистрибутив
-# Alpine легковесный дистрибутив Linux
-FROM python:3-alpine
+FROM python:3.9-alpine
 
-# Устанавливаем нужные приложению зависимости
-RUN \
- apk add --no-cache python3 postgresql-libs && \
- apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
- pip install setuptools==58.2.0 && \
- pip install psycopg2-binary==2.9.6 && \
- apk --purge del .build-deps
-
-# Cоздаем директорию, где будет размещено приложение
+# Create app directory
 RUN mkdir /app
 WORKDIR /app
 
-# Копируем файлы приложения и запускаем установку пакетов
+# Install dependencies
+RUN apk add --no-cache python3 postgresql-libs && \
+    apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev \
+    && pip install psycopg2-binary==2.9.6 \
+    && pip install setuptools==58.2.0
+
+# Clean up build dependencies
+#RUN apk --purge del .build-deps
+
+# Copy requirements file and install python requirements
 COPY requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
+
+# Copy the rest of the application
 COPY . /app
 
-# При запуске контейнера будет выполнен этот скрипт.
 CMD python /app/telegram_bot.py
