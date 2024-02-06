@@ -241,9 +241,8 @@ async def send_photo(message: types.Message):
         num += 1
         try:
             await dp.bot.send_photo(
-                555581588, photo=message.photo[0].file_id, caption=message.text
+                id[0], photo=message.photo[0].file_id, caption=message.text
             )
-            # await dp.bot.send_photo(id[0], photo=message.photo[0].file_id, caption=message.text)
             counter += 1
         except:
             print(f"Я в блоке {num}")
