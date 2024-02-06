@@ -240,7 +240,9 @@ async def send_photo(message: types.Message):
     for id in users_id:
         num += 1
         try:
-            await dp.bot.send_photo(555581588, photo=message.photo[0].file_id, caption=message.text)
+            await dp.bot.send_photo(
+                555581588, photo=message.photo[0].file_id, caption=message.text
+            )
             # await dp.bot.send_photo(id[0], photo=message.photo[0].file_id, caption=message.text)
             counter += 1
         except:
@@ -336,7 +338,7 @@ async def add_user_paid_dynamic(id, count_month):
         await bot.send_message(
             id,
             f"Вы ввели уникальный промокод, ваша подписка продлена на {count_month} {month}!",
-        ')
+        )
     except Exception as ex:
         print(ex)
         await bot.send_message(id, "Не удалось записать данные об оплате!")
