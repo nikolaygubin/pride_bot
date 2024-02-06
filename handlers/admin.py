@@ -470,7 +470,9 @@ def register_handlers_admin(dp: Dispatcher):
         ask_impress_admin, Text(equals="ask_impress_admin", ignore_case=True), state="*"
     )
     dp.register_message_handler(get_message, state=Admin.action_point)
-    dp.register_message_handler(get_photo, is_forwarded=True, state=Admin.action_point)
+    dp.register_message_handler(
+        get_photo, content_types=["photo"], state=Admin.action_point
+    )
 
     dp.register_callback_query_handler(
         promocodes_menu, Text(equals="promocodes", ignore_case=True), state=Admin.start
