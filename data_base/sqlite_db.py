@@ -232,6 +232,22 @@ async def send_message(message: types.Message):
     return counter
 
 
+async def send_photo(message: types.Message):
+    cursor.execute("SELECT id FROM users")
+    users_id = cursor.fetchall()
+    counter = 0
+    num = 0
+    for id in users_id:
+        num += 1
+        try:
+            await dp.bot.send_photo(555581588, photo=message.photo[0].file_id, caption=message.text)
+            # await dp.bot.send_photo(id[0], photo=message.photo[0].file_id, caption=message.text)
+            counter += 1
+        except:
+            print(f"Я в блоке {num}")
+    return counter
+
+
 async def load_info(id, state: FSMContext):
     cursor.execute("SELECT * FROM users WHERE id = %s", (id,))
     user = cursor.fetchone()
@@ -286,7 +302,7 @@ async def count_paid_subs():
     return len(cursor.fetchall()) - await count_demo_subs()
 
 
-async def add_user_paid_dynamic(id, count_month) :
+async def add_user_paid_dynamic(id, count_month):
     try:
         cursor.execute("SELECT * FROM users WHERE id = %s", (id,))
         user = cursor.fetchone()
@@ -312,18 +328,22 @@ async def add_user_paid_dynamic(id, count_month) :
         await bot.send_message(id, "Данные об оплате успешно записаны!")
         month = str()
         if count_month == 1:
-            month = 'месяц'
+            month = "месяц"
         elif count_month < 5:
-            month = 'месяца'
+            month = "месяца"
         else:
-            month = 'месяцев'  
-        await bot.send_message(id, f'Вы ввели уникальный промокод, ваша подписка продлена на {count_month} {month}!👌')
+            month = "месяцев"
+        await bot.send_message(
+            id,
+            f"Вы ввели уникальный промокод, ваша подписка продлена на {count_month} {month}!",
+        ')
     except Exception as ex:
         print(ex)
-        await bot.send_message(id, "Не удалось записать данные об оплате!")  
+        await bot.send_message(id, "Не удалось записать данные об оплате!")
+
 
 async def add_user_paid(id):
-    cursor.execute('DELETE FROM demo_users WHERE user_id = %s', (id, ))
+    cursor.execute("DELETE FROM demo_users WHERE user_id = %s", (id,))
     base.commit()
     try:
         cursor.execute("SELECT * FROM users WHERE id = %s", (id,))
@@ -452,7 +472,7 @@ async def find_users_without_pair():
             await add_one_week(user[0])
         except:
             print("Я в блоке")
-            
+
     cursor.execute(
         "SELECT id, name online FROM users WHERE array_upper(last_pairs, 1) is null and active = true and is_sub_active = true"
     )
@@ -670,6 +690,7 @@ async def update():
         if date_out < present:
             counter += 1
             await remove_active(user[0])
+            await remove_demo_user(user[0])
             try:
                 await bot.send_message(
                     user[0],
@@ -783,28 +804,37 @@ async def del_out_promo():
         if now_date > out_date:
             cursor.execute("DELETE FROM promo WHERE code = %s", (promo[0],))
             base.commit()
-            
-async def add_ref(ref_name : str, id : int):
-    cursor.execute('SELECT * FROM refs WHERE refcode = %s', (ref_name, ))
+
+
+async def add_ref(ref_name: str, id: int):
+    cursor.execute("SELECT * FROM refs WHERE refcode = %s", (ref_name,))
     ref_user = cursor.fetchone()
     if ref_user == None:
         return
-    
-    cursor.execute('SELECT * FROM refs')
+
+    cursor.execute("SELECT * FROM refs")
     ref_users = cursor.fetchall()
     for i in range(len(ref_users)):
         if id in ref_users[i][1]:
             return
-    
-    cursor.execute('UPDATE refs SET number = %s, id = array_append(id, %s) WHERE refcode = %s', (ref_user[2] + 1, id, ref_name,))
+
+    cursor.execute(
+        "UPDATE refs SET number = %s, id = array_append(id, %s) WHERE refcode = %s",
+        (
+            ref_user[2] + 1,
+            id,
+            ref_name,
+        ),
+    )
     base.commit()
-            
+
+
 async def get_refs():
-    cursor.execute('SELECT * FROM refs');
+    cursor.execute("SELECT * FROM refs")
     refs = cursor.fetchall()
-    
+
     data = str()
     for ref in refs:
-        data += f'{ref[0]} : {ref[2]} рефералов\n'
-    
+        data += f"{ref[0]} : {ref[2]} рефералов\n"
+
     return data
