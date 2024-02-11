@@ -218,35 +218,33 @@ async def read_sql(id):
 
 
 async def send_message(message: types.Message):
-    cursor.execute("SELECT id FROM users")
+    # убрать is_sub_active
+    cursor.execute("SELECT id FROM users where is_sub_active = %s", (True))
     users_id = cursor.fetchall()
     counter = 0
     num = 0
     for id in users_id:
         num += 1
         try:
-            await bot.send_message(id[0], message.text)
-            counter += 1
-        except:
-            print(f"Я в блоке {num}")
-    return counter
-
-
-async def send_photo(message: types.Message):
-    cursor.execute("SELECT id FROM users")
-    users_id = cursor.fetchall()
-    counter = 0
-    num = 0
-    for id in users_id:
-        num += 1
-        try:
+            # await bot.send_message(id[0], message.text)
+            values = list(await sqlite_db.get_profile(id[0]))
+            card = f"⏬\n\n{values[2]} из города {values[4]}"
+            inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(
+                InlineKeyboardButton(
+                    text=f"Написать {values[2]}", url="https://t.me/" + values[1][1::]
+                )
+            )
             await dp.bot.send_photo(
-                id[0], photo=message.photo[0].file_id, caption=message.text
+                ID[0],
+                photo=await sqlite_db.get_photo(id[0]),
+                caption=card,
+                reply_markup=inline_keyboard,
             )
             counter += 1
         except:
             print(f"Я в блоке {num}")
-    return counter
+
+    return f"{counter} / {len(users_id)}"
 
 
 async def load_info(id, state: FSMContext):
@@ -367,8 +365,12 @@ async def add_user_paid(id):
         )
         base.commit()
         await bot.send_message(id, "Данные об оплате успешно записаны!")
+        await bot.send_message(ID[0], f"Прошла оплата у юзера с id {id}")
     except Exception as ex:
         print(ex)
+        await bot.send_message(
+            ID[0], f"Оплата завершилась некорректно у юзера с id {id}"
+        )
         await bot.send_message(id, "Не удалось записать данные об оплате!")
 
 
