@@ -72,6 +72,7 @@ async def send_invoice_from_base():
         await send_invoice_message(pair[0], pair[1], invoice_text)
         await send_invoice_message(pair[1], pair[0], invoice_text)
         cursor.execute("DELETE FROM regular_pairs WHERE first = %s", (pair[0],))
+        base.commit()
 
 
 async def append_regular_pair(first_id, second_id, type_pair):
