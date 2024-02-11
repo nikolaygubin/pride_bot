@@ -49,7 +49,7 @@ def start_sql():
     base.commit()
 
     cursor.execute(
-        "CREATE TABLE IF NOT EXISTS regular_pairs(first INT, second INT, type INT)"
+        "CREATE TABLE IF NOT EXISTS regular_pairs(first INT PRIMARY KEY, second INT, type INT)"
     )
     base.commit()
 
