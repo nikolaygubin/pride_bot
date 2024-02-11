@@ -219,7 +219,7 @@ async def read_sql(id):
 
 async def send_message(message: types.Message):
     # убрать is_sub_active
-    cursor.execute("SELECT id FROM users where is_sub_active = %s", (True))
+    cursor.execute("SELECT id FROM users where is_sub_active = %s", (True,))
     users_id = cursor.fetchall()
     counter = 0
     num = 0
