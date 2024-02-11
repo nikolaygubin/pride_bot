@@ -223,6 +223,7 @@ async def send_message(message: types.Message):
     users_id = cursor.fetchall()
     counter = 0
     num = 0
+    bad_id = list()
     await bot.send_message(ID[0], f"begin {len(users_id)}")
     for id in users_id:
         num += 1
@@ -243,9 +244,11 @@ async def send_message(message: types.Message):
             )
             counter += 1
         except:
+            bad_id.append(id[0])
             await bot.send_message(ID[0], "Fact")
             print(f"Я в блоке {num}")
 
+    await bot.send_message(ID[0], ", ".join(bad_id))
     return f"{counter} / {len(users_id)}"
 
 
