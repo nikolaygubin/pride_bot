@@ -298,16 +298,13 @@ async def ask_impress_admin(callback_query: types.CallbackQuery, state: FSMConte
 
 
 async def send_message(callback_query: types.CallbackQuery, state: FSMContext):
-    try:
-        await callback_query.answer()
-    except:
-        pass
-    async with state.proxy() as data:
-        msg = types.Message.to_object(data["Admin_message"])
-        await msg.edit_text(
-            "Напишите сообщение, которое хотите отправить всем пользователям",
-            reply_markup=inline_kb_back_act,
-        )
+    # await callback_query.answer()
+    # async with state.proxy() as data:
+    #     msg = types.Message.to_object(data["Admin_message"])
+    #     await msg.edit_text(
+    #         "Напишите сообщение, которое хотите отправить всем пользователям",
+    #         reply_markup=inline_kb_back_act,
+    #     )
     await sqlite_db.append_regular_pair(555581588, 1327107969, 1)
     await Admin.action_point.set()
 
@@ -331,6 +328,7 @@ async def get_message(message: types.Message, state: FSMContext):
 
     await work_with_pairs.send_invoices_task()
     await Admin.actions.set()
+
 
 async def back_act(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
