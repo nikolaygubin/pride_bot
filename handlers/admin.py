@@ -298,7 +298,10 @@ async def ask_impress_admin(callback_query: types.CallbackQuery, state: FSMConte
 
 
 async def send_message(callback_query: types.CallbackQuery, state: FSMContext):
-    await callback_query.answer()
+    try:
+        await callback_query.answer()
+    except:
+        pass
     async with state.proxy() as data:
         msg = types.Message.to_object(data["Admin_message"])
         await msg.edit_text(
