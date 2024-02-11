@@ -244,7 +244,7 @@ async def send_message(message: types.Message):
             )
             counter += 1
         except:
-            bad_id.append(id[0])
+            bad_id.append(str(id[0]))
             await bot.send_message(ID[0], "Fact")
             print(f"Я в блоке {num}")
 
