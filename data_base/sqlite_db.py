@@ -6,7 +6,6 @@ import psycopg2 as ps
 import datetime, calendar, os
 from urllib.parse import urlparse
 from work_with_pairs import *
-import asyncio
 
 from keyboards.client_kb import (
     kb_history,
@@ -49,9 +48,42 @@ def start_sql():
     cursor.execute("CREATE TABLE IF NOT EXISTS demo_users(user_id BIGINT)")
     base.commit()
 
+    cursor.execute(
+        "CREATE TABLE IF NOT EXISTS regular_pairs(first INT, second INT, type INT)"
+    )
+    base.commit()
+
 
 async def close_db():
     base.close()
+
+
+async def send_invoice_from_base():
+    cursor.execute("SELECT * FROM regular_pairs")
+    pairs = cursor.fetchall()
+
+    for pair in pairs:
+        invoice_text = str()
+        if pair[2] == 0:
+            invoice_text = "Поздравляем! Вам нашлась оффлайн пара, советуем договориться о встрече сразу, приятного общения🤝\nВы можете начать знакомство с этой фразы : «Привет! Я из приложения PRIDE CONNECT) Ты мой собеседник на этой неделе\n\n У тебя как по времени на неделе? Давай созвонимся / встретимся?»"
+        else:
+            invoice_text = "Поздравляем! Вам нашлась онлайн пара, советуем написать сразу, приятного общения🤝\nВы можете начать знакомство с этой фразы : «Привет! Я из приложения PRIDE CONNECT) Ты мой собеседник на этой неделе\n\n У тебя как по времени на неделе? Давай созвонимся / встретимся?»"
+
+        await send_invoice_message(pair[0], pair[1], invoice_text)
+        await send_invoice_message(pair[1], pair[0], invoice_text)
+        cursor.execute("DELETE FROM regular_pairs WHERE first = %s", (pair[0],))
+
+
+async def append_regular_pair(first_id, second_id, type_pair):
+    cursor.execute(
+        "INSERT INTO regular_pairs VALUES (%s, %s, %s)",
+        (
+            first_id,
+            second_id,
+            type_pair,
+        ),
+    )
+    base.commit()
 
 
 async def check_promo(message: types.Message):
@@ -269,7 +301,7 @@ async def send_message(message: types.Message):
                 ID[0],
                 "Во время встречи оффлайн или онлайн не забудьте сделать фотографию с Вашим партнёром и отправить нашему администратору https://t.me/baribeshnik. Самые удачные мы будем опубликовывать в наших социальных сетях!",
             )
-            asyncio.sleep(1)
+
             counter += 1
         except:
             bad_id.append(str(id[0]))
