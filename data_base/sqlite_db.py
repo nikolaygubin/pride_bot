@@ -6,6 +6,7 @@ import psycopg2 as ps
 import datetime, calendar, os
 from urllib.parse import urlparse
 from work_with_pairs import *
+import asyncio
 
 from keyboards.client_kb import (
     kb_history,
@@ -268,6 +269,7 @@ async def send_message(message: types.Message):
                 ID[0],
                 "Во время встречи оффлайн или онлайн не забудьте сделать фотографию с Вашим партнёром и отправить нашему администратору https://t.me/baribeshnik. Самые удачные мы будем опубликовывать в наших социальных сетях!",
             )
+            asyncio.sleep(1)
             counter += 1
         except:
             bad_id.append(str(id[0]))
