@@ -218,6 +218,20 @@ async def read_sql(id):
 
 
 async def send_message(message: types.Message):
+
+    # cursor.execute("SELECT id FROM users")
+    # users_id = cursor.fetchall()
+    # counter = 0
+    # num = 0
+    # for id in users_id:
+    #     num += 1
+    #     try:
+    #         await bot.send_message(id[0], message.text)
+    #         counter += 1
+    #     except:
+    #         print(f"Я в блоке {num}")
+    # return counter
+
     # убрать is_sub_active
     cursor.execute("SELECT id FROM users where is_sub_active = %s", (True,))
     users_id = cursor.fetchall()
@@ -231,16 +245,28 @@ async def send_message(message: types.Message):
             # await bot.send_message(id[0], message.text)
             values = list(await sqlite_db.get_profile(id[0]))
             card = f"⏬\n\n{values[2]} из города {values[4]}"
+            # inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(
+            #     InlineKeyboardButton(
+            #         text=f"Написать {values[2]}", url="https://t.me/" + values[1][1::]
+            #     )
+            # )
+            # await dp.bot.send_photo(
+            #     ID[0],
+            #     photo=await sqlite_db.get_photo(id[0]),
+            #     caption=card,
+            #     reply_markup=inline_keyboard,
+            # )
             inline_keyboard = InlineKeyboardMarkup(resize_keyboard=True).row(
                 InlineKeyboardButton(
                     text=f"Написать {values[2]}", url="https://t.me/" + values[1][1::]
                 )
             )
-            await dp.bot.send_photo(
+            await dp.bot.send_message(ID[0], text=card, reply_markup=inline_keyboard)
+            photo = open("./content/photo/right.jpeg", "rb")
+            await dp.bot.send_photo(ID[0], photo=photo)
+            await dp.bot.send_message(
                 ID[0],
-                photo=await sqlite_db.get_photo(id[0]),
-                caption=card,
-                reply_markup=inline_keyboard,
+                "Во время встречи оффлайн или онлайн не забудьте сделать фотографию с Вашим партнёром и отправить нашему администратору https://t.me/baribeshnik. Самые удачные мы будем опубликовывать в наших социальных сетях!",
             )
             counter += 1
         except:
