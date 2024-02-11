@@ -309,15 +309,18 @@ async def send_message(callback_query: types.CallbackQuery, state: FSMContext):
 
 
 async def get_message(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        # await message.delete()
-        # msg = types.Message.to_object(data["Admin_message"])
-        # await msg.edit_text("Отправляем сообщения...")
-        count = await sqlite_db.send_message(message)
-        await msg.edit_text(
-            f"Ваше сообщение успешно доставлено {count} пользователям",
-            reply_markup=inline_kb_actions,
-        )
+    try:
+        async with state.proxy() as data:
+            await message.delete()
+            msg = types.Message.to_object(data["Admin_message"])
+            await msg.edit_text("Отправляем сообщения...")
+            count = await sqlite_db.send_message(message)
+            await msg.edit_text(
+                f"Ваше сообщение успешно доставлено {count} пользователям",
+                reply_markup=inline_kb_actions,
+            )
+    except:
+        pass
     await Admin.actions.set()
 
 
