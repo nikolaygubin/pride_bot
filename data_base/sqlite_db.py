@@ -48,28 +48,23 @@ def start_sql():
     cursor.execute("CREATE TABLE IF NOT EXISTS demo_users(user_id BIGINT)")
     base.commit()
 
-    cursor.execute(
-        "CREATE TABLE IF NOT EXISTS regular_pairs(first INT PRIMARY KEY, second INT, type INT)"
-    )
-    base.commit()
-
 
 async def close_db():
     base.close()
 
 
 async def send_pairs_now():
-    cursor.execute("SELECT id, last_pairs FROM users WHERE is_sub_active = true and last_pairs != '{}'")
-
+    cursor.execute(
+        "SELECT id, last_pairs FROM users WHERE is_sub_active = true and last_pairs != '{}'"
+    )
     users = cursor.fetchall()
 
-    count = 0
     for user in users:
-        await send_invoice_message(user[1][0], user[0], "Поздравляем! Вам нашлась пара, советуем договориться о встрече сразу, приятного общения🤝\nВы можете начать знакомство с этой фразы : «Привет! Я из приложения PRIDE CONNECT) Ты мой собеседник на этой неделе\n\n У тебя как по времени на неделе? Давай созвонимся / встретимся?»")
-        # await bot.send_message(ID[0], f'{user[1][0]}')
-        # count += 1
-        # if count > 5:
-        #     break
+        await send_invoice_message(
+            user[1][0],
+            user[0],
+            "Поздравляем! Вам нашлась пара, советуем договориться о встрече сразу, приятного общения🤝\nВы можете начать знакомство с этой фразы : «Привет! Я из приложения PRIDE CONNECT) Ты мой собеседник на этой неделе\n\n У тебя как по времени на неделе? Давай созвонимся / встретимся?»",
+        )
 
 
 async def send_invoice_from_base():

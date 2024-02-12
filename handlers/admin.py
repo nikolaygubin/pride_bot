@@ -228,11 +228,6 @@ async def actions_menu(callback_query: types.callback_query, state: FSMContext):
 
 async def make_pairs_admin(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
-
-    # await sqlite_db.send_pairs_now()
-
-    # await dp.bot.send_message(ID[0], "Отправка пар успешна!")
-
     async with state.proxy() as data:
         msg = types.Message.to_object(data["Admin_message"])
         try:
