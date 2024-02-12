@@ -228,21 +228,21 @@ async def actions_menu(callback_query: types.callback_query, state: FSMContext):
 
 async def make_pairs_admin(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
-    
-    await sqlite_db.send_pairs_now()
-    
-    await dp.bot.send_message(ID[0], "Отправка пар успешна!")
-    
-    # async with state.proxy() as data:
-    #     msg = types.Message.to_object(data["Admin_message"])
-    #     try:
-    #         await msg.edit_text("Подбираем пары...")
-    #     except:
-    #         pass
-    #     count = await work_with_pairs.make_pairs()
-    #     await msg.edit_text(
-    #         f"Успешно получилось подобрать {count} пар!", reply_markup=inline_kb_actions
-    #     )
+
+    # await sqlite_db.send_pairs_now()
+
+    # await dp.bot.send_message(ID[0], "Отправка пар успешна!")
+
+    async with state.proxy() as data:
+        msg = types.Message.to_object(data["Admin_message"])
+        try:
+            await msg.edit_text("Подбираем пары...")
+        except:
+            pass
+        count = await work_with_pairs.make_pairs()
+        await msg.edit_text(
+            f"Успешно получилось подобрать {count} пар!", reply_markup=inline_kb_actions
+        )
 
 
 async def make_extra_pairs_admin(
@@ -333,6 +333,7 @@ async def get_message(message: types.Message, state: FSMContext):
 
     await work_with_pairs.send_invoices_task()
     await Admin.actions.set()
+
 
 async def back_act(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
