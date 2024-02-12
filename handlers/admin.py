@@ -305,30 +305,18 @@ async def send_message(callback_query: types.CallbackQuery, state: FSMContext):
             "Напишите сообщение, которое хотите отправить всем пользователям",
             reply_markup=inline_kb_back_act,
         )
-    # await sqlite_db.append_regular_pair(555581588, 1327107969, 1)
     await Admin.action_point.set()
 
 
 async def get_message(message: types.Message, state: FSMContext):
-    # async with state.proxy() as data:
-    #     await message.delete()
-    #     msg = types.Message.to_object(data['Admin_message'])
-    #     await msg.edit_text('Отправляем сообщения...')
-    #     count = await sqlite_db.send_message(message)
-    #     await msg.edit_text(f'Ваше сообщение успешно доставлено {count} пользователям', reply_markup=inline_kb_actions)
-    # await Admin.actions.set()
-
-    # count = await sqlite_db.send_message(message)
-    # await bot.send_message(
-    #     ID[0],
-    #     f"Ваше сообщение успешно доставлено {count} пользователям",
-    #     reply_markup=inline_kb_actions,
-    # )
-    # await Admin.actions.set()
-
-    await work_with_pairs.send_invoices_task()
+    async with state.proxy() as data:
+        await message.delete()
+        msg = types.Message.to_object(data['Admin_message'])
+        await msg.edit_text('Отправляем сообщения...')
+        count = await sqlite_db.send_message(message)
+        await msg.edit_text(f'Ваше сообщение успешно доставлено {count} пользователям', reply_markup=inline_kb_actions)
+        
     await Admin.actions.set()
-
 
 async def back_act(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
