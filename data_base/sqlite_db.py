@@ -457,7 +457,7 @@ async def get_online_users():
 
 
 async def get_hooks(id):
-    cursor.execute("SELECT hooks FROM users WHERE id = %s", (id,))
+    cursor.execute("SELECT work FROM users WHERE id = %s", (id,))
     return cursor.fetchone()[0]
 
 
