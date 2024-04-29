@@ -881,12 +881,11 @@ async def update_usernames():
         try:
             current_user : types.ChatMember = await bot.get_chat_member(id, id)
             if f'@{current_user.user.username}' != user[1]:
-                await bot.send_message(ID[0], f'{current_user.user.username} -> {user[1]}\n')
-                res += f'{current_user.user.username} -> {user[1]}\n'
-                # cursor.execute('UPDATE users SET tg = %s WHERE id = %s', (current_user.user.username, user[0], ))
+                cursor.execute('UPDATE users SET tg = %s WHERE id = %s', (f'@{current_user.user.username}', id, ))
+                base.commit()
+                iter += 1
         except:
-            iter += 1
             pass
         
     await bot.send_message(ID[0], res)
-    await bot.send_message(ID[0], f'неуспешных итераций {iter}/{len(users)}')
+    await bot.send_message(ID[0], f'найденных дэбов {iter}/{len(users)}')
