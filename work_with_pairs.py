@@ -65,6 +65,7 @@ async def make_pairs():
     await sqlite_db.check_block()
     await sqlite_db.clear_temp_users()
     await sqlite_db.delete_current_pairs()
+    await sqlite_db.update_usernames()
     offline_users = (
         await sqlite_db.get_offline_users()
     )  # получаем всех оффлайн пользователей (id + town)
