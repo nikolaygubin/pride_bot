@@ -114,7 +114,6 @@ async def admin_panel(message: types.Message, state: FSMContext):
             # if data.get('Admin_message') != None:
             #     msg = types.Message.to_object(data['Admin_message'])
             #     await msg.delete()
-            await sqlite_db.update_usernames()
             msg = await message.answer("Админ панель", reply_markup=inline_kb_panel)
             data["Admin_message"] = msg.to_python()
         await Admin.start.set()

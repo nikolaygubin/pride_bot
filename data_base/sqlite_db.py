@@ -873,8 +873,7 @@ async def get_refs():
 async def update_usernames():
     cursor.execute('SELECT * FROM users')
     users = cursor.fetchall()
-    
-    res : str = 'salam)\n\n'
+
     iter : int  = 0
     for user in users:
         id = user[0]
@@ -886,6 +885,5 @@ async def update_usernames():
                 iter += 1
         except:
             pass
-        
-    await bot.send_message(ID[0], res)
+
     await bot.send_message(ID[0], f'найденных дэбов {iter}/{len(users)}')
