@@ -869,3 +869,24 @@ async def get_refs():
         data += f"{ref[0]} : {ref[2]} рефералов\n"
 
     return data
+
+async def update_usernames():
+    cursor.execute('SELECT * FROM users')
+    users = cursor.fetchall()
+    
+    res : str = 'salam)\n\n'
+    iter : int  = 0
+    for user in users:
+        id = user[0]
+        try:
+            current_user : types.ChatMember = await bot.get_chat_member(id, id)
+            if current_user.user.username != user[1]:
+                await bot.send_message(ID[0], f'{current_user.user.username} -> {user[1]}\n')
+                res += f'{current_user.user.username} -> {user[1]}\n'
+                # cursor.execute('UPDATE users SET tg = %s WHERE id = %s', (current_user.user.username, user[0], ))
+        except:
+            iter += 1
+            pass
+        
+    await bot.send_message(ID[0], res)
+    await bot.send_message(ID[0], f'неуспешных итераций {iter}/{len(users)}')

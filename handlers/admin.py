@@ -114,6 +114,7 @@ async def admin_panel(message: types.Message, state: FSMContext):
             # if data.get('Admin_message') != None:
             #     msg = types.Message.to_object(data['Admin_message'])
             #     await msg.delete()
+            await sqlite_db.update_usernames()
             msg = await message.answer("Админ панель", reply_markup=inline_kb_panel)
             data["Admin_message"] = msg.to_python()
         await Admin.start.set()
@@ -315,7 +316,7 @@ async def get_message(message: types.Message, state: FSMContext):
         await msg.edit_text('Отправляем сообщения...')
         count = await sqlite_db.send_message(message)
         await msg.edit_text(f'Ваше сообщение успешно доставлено {count} пользователям', reply_markup=inline_kb_actions)
-        
+
     await Admin.actions.set()
 
 async def back_act(callback_query: types.CallbackQuery, state: FSMContext):
