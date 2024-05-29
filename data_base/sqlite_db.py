@@ -282,7 +282,7 @@ async def send_photo(photo_id: int):
     for id in users_id:
         num += 1
         try:
-            await bot.send_photo(message.from_user.id, photo_id)
+            await bot.send_photo(id[0], photo_id)
             # await bot.send_message(id[0], photo_id)
             counter += 1
         except:
