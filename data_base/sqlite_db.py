@@ -274,6 +274,21 @@ async def send_message(message: types.Message):
             print(f"Я в блоке {num}")
     return counter
 
+async def send_photo(photo_id: int):
+    cursor.execute("SELECT id FROM users")
+    users_id = cursor.fetchall()
+    counter = 0
+    num = 0
+    for id in users_id:
+        num += 1
+        try:
+            await bot.send_photo(message.from_user.id, photo_id)
+            # await bot.send_message(id[0], photo_id)
+            counter += 1
+        except:
+            print(f"Я в блоке {num}")
+    return counter
+
 
 async def load_info(id, state: FSMContext):
     cursor.execute("SELECT * FROM users WHERE id = %s", (id,))

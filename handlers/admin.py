@@ -318,6 +318,16 @@ async def get_message(message: types.Message, state: FSMContext):
 
     await Admin.actions.set()
 
+async def get_photo(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        await message.delete()
+        msg = types.Message.to_object(data['Admin_message'])
+        await msg.edit_text('Отправляем сообщения...')
+        count = await sqlite_db.send_photo(message.photo[0].file_id)
+        await msg.edit_text(f'Ваше сообщение успешно доставлено {count} пользователям', reply_markup=inline_kb_actions)
+        
+    await Admin.actions.set()
+
 async def back_act(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
     async with state.proxy() as data:
@@ -463,6 +473,7 @@ def register_handlers_admin(dp: Dispatcher):
         ask_impress_admin, Text(equals="ask_impress_admin", ignore_case=True), state="*"
     )
     dp.register_message_handler(get_message, state=Admin.action_point)
+    dp.register_message_handler(get_photo, content_types=['photo'], state=Admin.action_point)
 
     dp.register_callback_query_handler(
         promocodes_menu, Text(equals="promocodes", ignore_case=True), state=Admin.start
